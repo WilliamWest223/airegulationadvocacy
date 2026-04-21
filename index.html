@@ -12,10 +12,17 @@
 </head>
 <body>
 
-<!-- Top progress bar -->
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 <div class="progress" id="progress" aria-hidden="true"></div>
 
-<!-- Sticky nav (appears after hero) -->
+<nav class="chapter-nav" id="chapterNav" aria-label="Page progress">
+  <button class="chapter-dot active" data-target="top" aria-label="Hero"></button>
+  <button class="chapter-dot" data-target="workforce" aria-label="Workforce"></button>
+  <button class="chapter-dot" data-target="education" aria-label="Education"></button>
+  <button class="chapter-dot" data-target="society" aria-label="Society"></button>
+  <button class="chapter-dot" data-target="action" aria-label="Action"></button>
+</nav>
+
 <nav class="nav" id="nav" aria-label="Section navigation">
   <div class="nav-inner">
     <a href="#top" class="nav-brand">The Algorithmic Horizon</a>
@@ -28,23 +35,23 @@
   </div>
 </nav>
 
-<!-- HERO -->
 <header class="hero" id="top">
+  <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
+
   <div class="hero-grid">
     <div class="hero-text">
-      <p class="overline">An Argument for Proactive AI Regulation</p>
-      <h1 class="hero-headline">
+      <p class="overline hero-line" style="--d:0">An Argument for Proactive AI Regulation</p>
+      <h1 class="hero-headline hero-line" style="--d:1">
         The<br />
         Algorithmic<br />
-        <em>Horizon</em><span class="period">.</span>
+        <em>Horizon</em><span class="period">:</span><br />
+        <span class="hero-sub-head">Why AI Regulation Cannot Wait</span>
       </h1>
-      <p class="hero-sub">
-        Artificial intelligence is reshaping labor, learning, and public discourse faster than our institutions can respond. The window to govern it is narrowing — and inaction is itself a policy.
+      <p class="hero-sub hero-line" style="--d:2">
+        Artificial intelligence has rapidly evolved from a niche novelty into a foundational infrastructure that impacts daily life. We are no longer dealing with simple chatbots; AI systems are being deployed in high-stakes areas like education, business, and healthcare, where algorithmic mistakes can have severe real-world consequences. Waiting to see how the rollout of AI plays out is no longer a viable option. The time for proactive governance and clear rules is right now.
       </p>
-      <div class="hero-meta">
+      <div class="hero-meta hero-line" style="--d:3">
         <span class="meta-label">A Public Argument</span>
-        <span class="meta-divider" aria-hidden="true"></span>
-        <span>Why AI Regulation Cannot Wait</span>
       </div>
     </div>
 
@@ -57,16 +64,9 @@
             <stop offset="100%" stop-color="#C2410C" stop-opacity="1" />
           </linearGradient>
         </defs>
-        <!-- Horizon line -->
         <line x1="20" y1="300" x2="380" y2="300" stroke="url(#horizonFade)" stroke-width="1" />
-        <!-- Ordered dot grid (top half) - orderly -->
-        <g id="orderly" fill="#111418">
-          <!-- rows of dots, uniform -->
-        </g>
-        <!-- Chaotic dots (bottom half) -->
-        <g id="chaotic" fill="#111418">
-          <!-- dots drift -->
-        </g>
+        <g id="orderly" fill="#111418"></g>
+        <g id="chaotic" fill="#111418"></g>
       </svg>
     </div>
   </div>
@@ -77,182 +77,209 @@
   </a>
 </header>
 
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="ticker-accent">40%</span> of global jobs exposed to AI &mdash; IMF</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-item"><span class="ticker-accent">85%</span> of students use AI tools for academic work in 2026</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-item">Top <span class="ticker-accent">5</span> tech giants control the majority of AI infrastructure</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-item">AI hiring systems process <span class="ticker-accent">millions</span> of applications daily</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-item">AI detection tools disproportionately flag <span class="ticker-accent">non-native</span> English speakers</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-item"><span class="ticker-accent">40%</span> of global jobs exposed to AI &mdash; IMF</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-item"><span class="ticker-accent">85%</span> of students use AI tools for academic work in 2026</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-item">Top <span class="ticker-accent">5</span> tech giants control the majority of AI infrastructure</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-item">AI hiring systems process <span class="ticker-accent">millions</span> of applications daily</span>
+    <span class="ticker-sep">◆</span>
+    <span class="ticker-item">AI detection tools disproportionately flag <span class="ticker-accent">non-native</span> English speakers</span>
+    <span class="ticker-sep">◆</span>
+  </div>
+</div>
+
 <main>
 
   <!-- SECTION 01 — WORKFORCE -->
   <section class="section" id="workforce">
     <div class="section-header">
       <span class="section-number">01</span>
-      <p class="overline">Workforce Disruption</p>
-      <h2 class="section-title">Work, rewritten without consent.</h2>
+      <p class="overline">Area of Impact</p>
+      <h2 class="section-title">The Threat to Fair Labor and Hiring</h2>
     </div>
 
-    <div class="section-lede">
-      <p>
-        The first wave of generative AI was sold as augmentation. The reality arriving in hiring pipelines, customer-service floors, and white-collar offices looks more like replacement — and, where humans remain, surveillance. The question is no longer <em>whether</em> work will be automated, but <em>who</em> gets to decide the terms.
-      </p>
+    <div class="stats-row">
+      <div class="stat-pill">
+        <div class="stat-pill-figure">
+          <span class="stat-pill-num" data-target="40">0</span><span class="stat-pill-unit">%</span>
+        </div>
+        <p class="stat-pill-label">of global jobs<br>exposed to AI disruption</p>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-figure">
+          <span class="stat-pill-num" data-target="60">0</span><span class="stat-pill-unit">M+</span>
+        </div>
+        <p class="stat-pill-label">jobs potentially<br>displaced globally</p>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-figure">
+          <span class="stat-pill-num" data-target="92">0</span><span class="stat-pill-unit">%</span>
+        </div>
+        <p class="stat-pill-label">of Fortune 500 use<br>AI screening systems</p>
+      </div>
     </div>
 
-    <div class="stat-grid">
-      <article class="stat-block">
-        <p class="stat-number">300M</p>
-        <p class="stat-claim">full-time jobs globally exposed to automation by generative AI.</p>
-        <p class="stat-context">
-          Economists estimate that roughly two-thirds of occupations face some degree of automation from current AI systems — a disruption arriving faster than reskilling programs, social safety nets, or labor law can absorb.
-        </p>
-        <p class="stat-source">Goldman Sachs Global Economics, 2023</p>
-      </article>
-
-      <article class="stat-block">
-        <p class="stat-number">Amazon.</p>
-        <p class="stat-claim">An internal AI recruiter penalized résumés containing the word <em>"women's."</em></p>
-        <p class="stat-context">
-          Trained on a decade of male-dominated hiring data, the system learned that maleness correlated with being hired — and encoded that into its scoring. The tool was scrapped in 2018, but the pattern is not unique to Amazon. Without regulation, historical discrimination is laundered through code and rebranded as objectivity.
-        </p>
-        <p class="stat-source">Reuters investigation, 2018</p>
-      </article>
+    <div class="split-layout split-layout--chart">
+      <div class="split-left">
+        <svg class="split-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" />
+        </svg>
+        <h3 class="col-title">Workforce Disruption and Automated Bias</h3>
+        <ul class="clean-list">
+          <li>The integration of AI into the workforce is heavily disruptive, with the IMF estimating that nearly 40 percent of global jobs are exposed to AI-driven changes.</li>
+          <li>AI automation forces a massive "Skill Imbalance," rewarding highly educated, adaptable workers while squeezing out middle-skill jobs and putting entry-level workers at high risk.</li>
+          <li>In hiring, AI-powered systems are already processing millions of applications and inadvertently discriminating against candidates by filtering them out based on proxy variables like zip codes or graduation years.</li>
+        </ul>
+      </div>
+      <div class="split-right">
+        <div class="chart-wrapper">
+          <p class="chart-title">AI Exposure Risk by Sector <span class="chart-note">— estimated % of roles affected</span></p>
+          <canvas id="workforceChart" aria-label="Horizontal bar chart showing AI exposure risk by industry sector"></canvas>
+        </div>
+      </div>
     </div>
-
-    <p class="section-close">
-      Automation is not inherently unjust. Unregulated automation, administered by private firms with no obligation to the workers it displaces, is.
-    </p>
   </section>
 
   <!-- SECTION 02 — EDUCATION -->
   <section class="section section-alt" id="education">
     <div class="section-header">
       <span class="section-number">02</span>
-      <p class="overline">The Educational Dilemma</p>
-      <h2 class="section-title">Learning requires friction.</h2>
+      <p class="overline">Area of Impact</p>
+      <h2 class="section-title">The Educational Dilemma</h2>
     </div>
 
-    <div class="section-lede">
-      <p>
-        Universities have responded to AI in schools the way institutions always respond to new technology: with panic, prohibitions, and detection software. The more durable problem is harder to name. When a student can outsource the struggle of thinking, the cognitive development that <em>is</em> the education doesn't happen at all.
-      </p>
-    </div>
-
-    <blockquote class="pullquote">
-      <span class="pullquote-mark" aria-hidden="true">“</span>
-      <p>An AI that removes the friction of learning also removes the learning. What remains is a credential — a certificate that someone, or something, answered the questions.</p>
-    </blockquote>
-
-    <div class="comparison">
-      <div class="comparison-col">
-        <p class="overline small">Claimed</p>
-        <p class="comparison-big">98%</p>
-        <p class="comparison-label">accuracy, per Turnitin's marketing materials for its AI-detection product at launch.</p>
+    <div class="split-layout split-layout--chart">
+      <div class="split-left">
+        <svg class="split-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+        <h3 class="col-title">The Cost of Bypassing the Struggle</h3>
+        <ul class="clean-list">
+          <li>While AI can offer personalized instruction and reduce administrative busywork, it fundamentally threatens the learning process by allowing students to easily bypass the cognitive struggle required to develop analytical skills.</li>
+          <li>When students skip this struggle, true understanding and learning are lost.</li>
+          <li>Furthermore, the current AI detection tools used by schools to police cheating are structurally flawed, unreliable, and biased, often unjustly flagging the work of non-native English speakers.</li>
+        </ul>
       </div>
-      <div class="comparison-divider" aria-hidden="true"></div>
-      <div class="comparison-col">
-        <p class="overline small signal">In practice</p>
-        <p class="comparison-big signal">2×</p>
-        <p class="comparison-label">the rate at which non-native English writing is wrongly flagged as AI-generated, per Stanford researchers.</p>
+      <div class="split-right">
+        <div class="chart-wrapper">
+          <p class="chart-title">Student AI Tool Adoption <span class="chart-note">— % using AI for academic work</span></p>
+          <canvas id="educationChart" aria-label="Line chart showing rising student AI tool adoption from 2020 to 2026"></canvas>
+        </div>
       </div>
     </div>
-
-    <p class="section-close">
-      Detection tools offer universities the appearance of a solution while shifting the cost of their errors onto the students least equipped to contest them. The honest response is harder: redesign the assignment, redesign the incentive, and accept that no software will do the institution's thinking for it.
-    </p>
   </section>
 
   <!-- SECTION 03 — SOCIETY -->
   <section class="section" id="society">
     <div class="section-header">
       <span class="section-number">03</span>
-      <p class="overline">Societal Risks</p>
-      <h2 class="section-title">A public sphere, privately owned.</h2>
+      <p class="overline">Area of Impact</p>
+      <h2 class="section-title">Societal Risks and the Loss of Truth</h2>
     </div>
 
-    <div class="section-lede">
-      <p>
-        Two trends are converging. The cost of producing persuasive synthetic content has collapsed to near-zero, and the infrastructure on which that content travels is concentrated in fewer hands than at any point in modern history. Democratic discourse is being asked to function on a substrate it was not designed for.
-      </p>
-    </div>
-
-    <div class="two-col">
-      <article class="col-panel">
-        <p class="overline">Misinformation</p>
-        <h3 class="col-title">Synthetic speech at industrial scale.</h3>
-        <p>
-          In January 2024, voters in New Hampshire received robocalls in a synthesized voice urging them not to vote in the primary. The audio cost roughly a dollar to generate. Elections officials traced the source; most such operations will never be traced. The bottleneck on political deception used to be production — it is now distribution, and distribution belongs to a handful of platforms with no statutory duty to police it.
-        </p>
-      </article>
-
-      <article class="col-panel">
-        <p class="overline">Concentrated Power</p>
-        <h3 class="col-title">Three firms, one stack.</h3>
-        <p>
-          The compute, the data, and the frontier models that underwrite contemporary AI sit inside a small set of corporations. When a single company can decide what its model will say about an election, a disease, or a war — and when that company is accountable only to its shareholders — the line between a private product decision and a public policy act has already been crossed.
-        </p>
-      </article>
-    </div>
-
-    <div class="concentration-viz" aria-hidden="true">
-      <div class="circle-large"><span>~65%</span></div>
-      <div class="circle-med"></div>
-      <div class="circle-sm"></div>
-      <div class="circle-xs"></div>
-      <div class="circle-xxs"></div>
-      <p class="concentration-caption">Approximate share of frontier-model compute and capital held by the three largest AI developers.</p>
+    <div class="split-layout split-layout--chart">
+      <div class="split-left">
+        <svg class="split-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+        </svg>
+        <h3 class="col-title">Misinformation and Monopolized Power</h3>
+        <ul class="clean-list">
+          <li>Generative AI can easily produce vast amounts of authoritative-sounding misinformation, indifferent to actual truth.</li>
+          <li>If the public can no longer reliably distinguish between real and fabricated information, the shared factual ground necessary for a functioning society dissolves.</li>
+          <li>There is also a severe governance risk of "neo-feudalism," where only the largest, wealthiest tech giants can afford to control the infrastructure and data powering advanced AI, thereby concentrating wealth and power.</li>
+        </ul>
+      </div>
+      <div class="split-right">
+        <div class="chart-wrapper chart-wrapper--donut">
+          <p class="chart-title">AI Infrastructure Control <span class="chart-note">— by market dominance</span></p>
+          <div class="donut-stage">
+            <canvas id="societyChart" aria-label="Doughnut chart showing AI infrastructure controlled by big tech vs others"></canvas>
+            <div class="donut-center-label">
+              <span class="donut-center-num">78%</span>
+              <span class="donut-center-sub">Big Tech</span>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="donut-legend-item"><span class="donut-swatch" style="background:var(--signal)"></span>Big Tech (Top 5) — 78%</div>
+            <div class="donut-legend-item"><span class="donut-swatch" style="background:var(--ink-soft)"></span>Mid-tier Tech — 14%</div>
+            <div class="donut-legend-item"><span class="donut-swatch" style="background:var(--stone)"></span>Open Source / Others — 8%</div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- SECTION 04 — CALL TO ACTION (INVERTED) -->
+  <!-- SECTION 04 — CALL TO ACTION -->
   <section class="section section-dark" id="action">
+    <div class="scanlines" aria-hidden="true"></div>
+
     <div class="section-header">
       <span class="section-number dark">04</span>
-      <p class="overline dark">The Turn</p>
-      <h2 class="section-title dark">What regulation actually looks like.</h2>
+      <p class="overline dark">The Solution</p>
+      <h2 class="section-title dark">Proactive Governance and Human-in-the-Loop Policies</h2>
     </div>
 
     <div class="section-lede dark">
       <p>
-        "Regulation" is often invoked as a vague imposition — bureaucratic, innovation-killing, un-American. In practice, the serious proposals are narrower and more concrete than that. Three principles, borrowed from decades of policy work in aviation, medicine, and finance, are sufficient to ground the rest.
+        The solution is not to ban AI, but to implement rules that keep humans involved and accountable. Meaningful regulation must include:
       </p>
     </div>
 
     <div class="principles">
       <article class="principle-card">
-        <p class="principle-num">I</p>
-        <h3 class="principle-title">Mandatory Transparency</h3>
-        <p>
-          Any AI system deployed at scale must publicly document what it was trained on, how it was evaluated, and where it is known to fail. No proprietary-secrecy exemption for systems that act on the public.
-        </p>
-        <p class="principle-example">
-          <span class="overline small dark">Analogue</span>
-          nutrition labels; drug trial disclosure; SEC filings.
-        </p>
+        <div class="principle-card-inner">
+          <p class="principle-num">I</p>
+          <h3 class="principle-title">Mandatory Transparency</h3>
+          <p>
+            Universities and employers must explicitly disclose exactly how, when, and where AI algorithms are being used to evaluate students or applicants.
+          </p>
+        </div>
+        <div class="principle-card-glow" aria-hidden="true"></div>
       </article>
 
       <article class="principle-card">
-        <p class="principle-num">II</p>
-        <h3 class="principle-title">Human-in-the-Loop</h3>
-        <p>
-          Consequential decisions — hiring, lending, medical diagnosis, sentencing, immigration — may use AI as an input, but the decision of record must rest with a named human who can be questioned, overruled, and held accountable.
-        </p>
-        <p class="principle-example">
-          <span class="overline small dark">Analogue</span>
-          a pilot who can override the autopilot.
-        </p>
+        <div class="principle-card-inner">
+          <p class="principle-num">II</p>
+          <h3 class="principle-title">Human-in-the-Loop Oversight</h3>
+          <p>
+            No final, consequential decision—whether a course grade or a hiring rejection—should ever be made entirely by an AI system without independent human validation and sign-off.
+          </p>
+        </div>
+        <div class="principle-card-glow" aria-hidden="true"></div>
       </article>
 
       <article class="principle-card">
-        <p class="principle-num">III</p>
-        <h3 class="principle-title">A Right to Explanation</h3>
-        <p>
-          When an algorithm denies you a job, a loan, or a benefit, you are entitled to a specific, human-readable reason — not a confidence score. Without it, there is no appeal. Without appeal, there is no law.
-        </p>
-        <p class="principle-example">
-          <span class="overline small dark">Analogue</span>
-          the adverse-action notice required in U.S. credit decisions.
-        </p>
+        <div class="principle-card-inner">
+          <p class="principle-num">III</p>
+          <h3 class="principle-title">Inclusive Policy Making</h3>
+          <p>
+            The design of AI governance must not be left solely to the technologists building the systems; it must include input from civil society groups and affected communities to prevent the amplification of existing inequalities.
+          </p>
+        </div>
+        <div class="principle-card-glow" aria-hidden="true"></div>
       </article>
     </div>
 
     <div class="cta">
-      <p class="cta-prompt">The horizon is not distant. It is here, and it is being drawn for us.</p>
-      <a href="#top" class="cta-button">Return to the top</a>
+      <p class="cta-prompt">The algorithmic horizon is not distant. The time for proactive governance and clear rules is right now.</p>
+      <a href="#top" class="cta-button" aria-label="Return to top of page">
+        <span class="cta-button-text">Return to the top</span>
+        <span class="cta-button-fill" aria-hidden="true"></span>
+      </a>
     </div>
   </section>
 
@@ -260,16 +287,16 @@
 
 <footer class="footer">
   <div class="footer-inner">
-    <p class="footer-title">Sources & Further Reading</p>
+    <p class="footer-title">Sources &amp; Further Reading</p>
     <ol class="footer-sources">
-      <li>Briggs, Joseph, and Devesh Kodnani. "The Potentially Large Effects of Artificial Intelligence on Economic Growth." <em>Goldman Sachs Global Economics</em>, 26 Mar. 2023.</li>
-      <li>Dastin, Jeffrey. "Amazon Scraps Secret AI Recruiting Tool That Showed Bias Against Women." <em>Reuters</em>, 10 Oct. 2018.</li>
-      <li>Liang, Weixin, et al. "GPT Detectors Are Biased Against Non-Native English Writers." <em>Patterns</em>, vol. 4, no. 7, 2023.</li>
-      <li>International Monetary Fund. "Gen-AI: Artificial Intelligence and the Future of Work." IMF Staff Discussion Note, Jan. 2024.</li>
-      <li>Elon University Imagining the Digital Future Center. "The Impact of Artificial Intelligence by 2040." 2024.</li>
-      <li>MIT News. "Study: Transparency Is Often Lacking in Datasets Used to Train Large Language Models." 2024.</li>
-      <li>IBM Institute for Business Value. "The Enterprise Guide to AI Governance." 2024.</li>
-      <li>Forbes. Reporting on synthetic-media incidents and AI election interference, 2024.</li>
+      <li>"'AI Impact by 2040': Deep Thinkers Address the Potential Future." <em>Imagining the Digital Future Center</em>, Elon University, imaginingthedigitalfuture.org/reports-and-publications/the-impact-of-artificial-intelligence-by-2040/deep-thinkers-address-the-potential-future/.</li>
+      <li>"AI in Schools: Pros and Cons." <em>College of Education</em>, University of Illinois Urbana-Champaign, 24 Oct. 2024, education.illinois.edu/about/news-events/news/article/2024/10/24/ai-in-schools--pros-and-cons.</li>
+      <li>"The Evolution and Future of Artificial Intelligence: A Student's Guide." <em>California Miramar University</em>, July 2025, www.calmu.edu/news/future-of-artificial-intelligence.</li>
+      <li>Georgieva, Kristalina. "New Skills and AI Are Reshaping the Future of Work." <em>IMF Blog</em>, International Monetary Fund, 14 Jan. 2026, www.imf.org/en/blogs/articles/2026/01/14/new-skills-and-ai-are-reshaping-the-future-of-work.</li>
+      <li>Hayes, Molly, and Amanda Downie. "AI and the Future of Work." <em>IBM Think</em>, IBM, www.ibm.com/think/insights/ai-and-the-future-of-work. Accessed 25 Mar. 2026.</li>
+      <li>Mucci, Tim. "The Future of AI: Trends Shaping the Next 10 Years." <em>IBM Think</em>, IBM, www.ibm.com/think/insights/artificial-intelligence-future. Accessed 25 Mar. 2026.</li>
+      <li>Towers-Clark, Charles. "AI In 2026: 10 Predictions On Automation And The Future Of Work." <em>Forbes</em>, 10 Dec. 2025, www.forbes.com/sites/charlestowersclark/2025/12/10/ai-in-2026-10-predictions-on-automation-and-the-future-of-work/.</li>
+      <li>Zewe, Adam. "What Does the Future Hold for Generative AI?" <em>MIT News</em>, Massachusetts Institute of Technology, 19 Sept. 2025, news.mit.edu/2025/what-does-future-hold-generative-ai-0919.</li>
     </ol>
     <p class="footer-colophon">
       A public argument. Set in Fraunces and IBM Plex Sans.
@@ -277,6 +304,7 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
