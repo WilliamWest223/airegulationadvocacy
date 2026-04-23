@@ -1393,3 +1393,141 @@ a:focus-visible, button:focus-visible {
   width: 100% !important;
   height: 100% !important;
 }
+
+/* 4. Turing Test Mini-Game */
+.turing-test-widget {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+}
+.turing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.5rem;
+}
+.turing-title {
+  font-family: var(--f-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--stone);
+}
+.turing-score {
+  font-family: var(--f-mono);
+  font-size: 0.75rem;
+  color: var(--signal);
+}
+.turing-body {
+  background: rgba(17, 20, 24, 0.05);
+  padding: 1.5rem;
+  border-left: 2px solid var(--signal);
+  margin-bottom: 1rem;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+}
+.turing-statement {
+  font-family: var(--f-serif);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  margin: 0;
+}
+.turing-controls {
+  display: flex;
+  gap: 1rem;
+}
+.t-btn {
+  flex: 1;
+  padding: 0.75rem;
+  font-family: var(--f-mono);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.t-btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.t-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.turing-result {
+  margin-top: 1rem;
+  font-family: var(--f-mono);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+.turing-result.wrong {
+  color: #fff;
+  background: var(--signal);
+  animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+.turing-result.correct {
+  color: #fff;
+  background: #2E7D32;
+}
+.turing-end-screen {
+  text-align: center;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+.t-end-title {
+  font-family: var(--f-sans);
+  color: var(--ink);
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+.t-end-score-box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.5rem 3rem;
+  margin: 0.5rem 0;
+}
+.t-end-score-label {
+  font-family: var(--f-mono);
+  color: var(--stone);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.t-end-score {
+  font-family: var(--f-serif);
+  color: var(--signal);
+  font-size: 3rem;
+  line-height: 1;
+  margin: 0;
+}
+.t-end-msg {
+  color: var(--ink-soft);
+  font-family: var(--f-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 80%;
+  margin: 0;
+}
+.t-btn--reboot {
+  margin-top: 1rem;
+  max-width: 200px;
+}

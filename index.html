@@ -212,6 +212,31 @@
           <li>When students skip this struggle, true understanding and learning are lost.</li>
           <li>Furthermore, the current AI detection tools used by schools to police cheating are structurally flawed, unreliable, and biased, often unjustly flagging the work of non-native English speakers.</li>
         </ul>
+
+        <div class="turing-test-widget" id="turingWidget">
+          <div class="turing-header">
+            <span class="turing-title">Turing Test: AI or Human?</span>
+            <span class="turing-score">Round <span id="tRound">1</span>/5 | Score: <span id="tScore">0</span></span>
+          </div>
+          <div class="turing-body">
+            <p id="tStatement" class="turing-statement">Loading statement...</p>
+          </div>
+          <div class="turing-controls" id="tControls">
+            <button class="t-btn" data-guess="human">Human</button>
+            <button class="t-btn" data-guess="ai">AI</button>
+          </div>
+          <div class="turing-result" id="tResult" style="display: none;"></div>
+          
+          <div class="turing-end-screen" id="tEndScreen" style="display: none;">
+            <h4 class="t-end-title">TEST COMPLETE</h4>
+            <div class="t-end-score-box">
+              <span class="t-end-score-label">Final Score</span>
+              <p class="t-end-score"><span id="tFinalScore">0</span> / 5</p>
+            </div>
+            <p class="t-end-msg" id="tTypewriter"></p>
+            <button class="t-btn t-btn--reboot" id="tRestartBtn">Try Again</button>
+          </div>
+        </div>
       </div>
       <div class="split-right">
         <div class="chart-wrapper">

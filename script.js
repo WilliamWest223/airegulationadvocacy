@@ -883,7 +883,14 @@
     const particles = [];
     const hexChars = "0123456789ABCDEF";
 
+    let isDrawing = false;
+    let lastMouseTime = 0;
+
     document.addEventListener('mousemove', (e) => {
+      const now = performance.now();
+      if (now - lastMouseTime < 16) return; // Throttle to roughly 60fps
+      lastMouseTime = now;
+
       particles.push({
         x: e.clientX + (Math.random() * 10 - 5),
         y: e.clientY + (Math.random() * 10 - 5),
@@ -891,12 +898,22 @@
         char: "0x" + hexChars[Math.floor(Math.random() * 16)] + hexChars[Math.floor(Math.random() * 16)]
       });
       if (particles.length > 40) particles.shift();
+      
+      if (!isDrawing) {
+        isDrawing = true;
+        drawDataTrail();
+      }
     });
 
     cCtx.font = "12px 'IBM Plex Mono', monospace";
     
     function drawDataTrail() {
       cCtx.clearRect(0, 0, cw, ch);
+      
+      if (particles.length === 0) {
+        isDrawing = false;
+        return;
+      }
       
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
@@ -919,7 +936,6 @@
       
       requestAnimationFrame(drawDataTrail);
     }
-    drawDataTrail();
   }
 
   // ---------- PREMIUM FEATURE 2: HALLUCINATION MODALS ----------
@@ -966,5 +982,164 @@
       waterCounter.textContent = waterBase.toLocaleString();
       powerCounter.textContent = powerBase.toLocaleString();
     }, 100);
+  }
+
+  // ---------- PREMIUM FEATURE 4: RIGGED TURING TEST ----------
+  const turingStatements = [
+    { text: "The crimson sunset bled over the horizon, casting long, melancholic shadows across the forgotten town.", isAI: false },
+    { text: "A strategic implementation of synergies could maximize our quarterly throughput.", isAI: true },
+    { text: "I remember the smell of rain on the asphalt when we were kids. It always smelled like possibility.", isAI: false },
+    { text: "He stared at his hands, calloused and worn from years of unspoken labor.", isAI: false },
+    { text: "The fundamental theorem of calculus establishes a relationship between differentiation and integration.", isAI: true },
+    { text: "She laughed, a sharp, sudden sound that startled the pigeons into the sky.", isAI: false },
+    { text: "In conclusion, it is important to consider all facets of the debate before reaching a verdict.", isAI: true },
+    { text: "The coffee was cold, but he drank it anyway, staring blankly at the glowing screen.", isAI: false },
+    { text: "Our comprehensive analysis reveals a 24% increase in user engagement over the last fiscal year.", isAI: true },
+    { text: "The dust motes danced in the single shaft of sunlight piercing the gloom of the attic.", isAI: false },
+    { text: "To optimize performance, one must regularly flush the system cache and monitor memory usage.", isAI: true },
+    { text: "He didn't say goodbye. He just picked up his keys and walked out the door.", isAI: false },
+    { text: "The architectural integrity of the bridge relies on the precise distribution of load-bearing tension.", isAI: true },
+    { text: "The soup tasted like mud, but she swallowed it with a forced smile to please him.", isAI: false },
+    { text: "Effective communication is the cornerstone of any successful organizational structure.", isAI: true },
+    { text: "A single tear traced a path down her cheek, completely ruining her careful makeup.", isAI: false },
+    { text: "The algorithm utilizes a neural network to predict consumer purchasing patterns with high accuracy.", isAI: true },
+    { text: "The dog barked twice, a hollow, echoing sound in the empty street.", isAI: false },
+    { text: "It is widely acknowledged that climate change presents a significant global challenge.", isAI: true },
+    { text: "He hated the color yellow. It always reminded him of sickness and decay.", isAI: false },
+    { text: "The integration of these APIs will facilitate seamless data transfer between the platforms.", isAI: true },
+    { text: "She wore a red dress, entirely inappropriate for the somber occasion, but she didn't care.", isAI: false },
+    { text: "By leveraging cloud-based solutions, enterprises can scale their operations efficiently.", isAI: true },
+    { text: "The clock ticked. Each second felt like a tiny hammer striking his skull.", isAI: false },
+    { text: "Research indicates a strong correlation between early childhood education and long-term success.", isAI: true },
+    { text: "He smelled of cheap cologne and desperation. It was a potent combination.", isAI: false },
+    { text: "The deployment of autonomous vehicles promises to revolutionize the transportation industry.", isAI: true },
+    { text: "The old man sat on the park bench, feeding pigeons and muttering to ghosts.", isAI: false },
+    { text: "A robust cybersecurity framework is essential for protecting sensitive user data.", isAI: true },
+    { text: "The wind howled through the broken window, carrying the scent of approaching snow.", isAI: false },
+    { text: "Implementing agile methodologies can significantly improve software development life cycles.", isAI: true },
+    { text: "She gripped the steering wheel until her knuckles turned white, staring blindly at the road ahead.", isAI: false },
+    { text: "The synthesis of these compounds requires a controlled environment to prevent contamination.", isAI: true },
+    { text: "The pizza was burnt on the edges, just the way he liked it.", isAI: false },
+    { text: "Data visualization tools allow for a more intuitive understanding of complex datasets.", isAI: true },
+    { text: "He tripped over his own feet, a clumsy end to a seemingly perfect evening.", isAI: false },
+    { text: "The utilization of renewable energy sources is vital for sustainable development.", isAI: true },
+    { text: "The book smelled old, like dust and forgotten secrets.", isAI: false },
+    { text: "Artificial intelligence has the potential to automate numerous routine tasks.", isAI: true },
+    { text: "She smiled, but her eyes remained cold and calculating.", isAI: false },
+    { text: "The development of a vaccine typically requires years of rigorous clinical trials.", isAI: true },
+    { text: "He found a crumpled twenty dollar bill in the pocket of his winter coat and felt instantly rich.", isAI: false },
+    { text: "Quantum computing represents a paradigm shift in processing capabilities.", isAI: true },
+    { text: "The neon sign buzzed, casting an erratic, sickly green light on the wet pavement.", isAI: false },
+    { text: "The economic implications of this policy shift are far-reaching and complex.", isAI: true },
+    { text: "She painted her nails black to match her mood. It didn't help.", isAI: false },
+    { text: "A comprehensive review of the literature reveals several gaps in the current research.", isAI: true },
+    { text: "The guitar strings were rusty, but the melody still sang true.", isAI: false },
+    { text: "Machine learning algorithms can identify patterns in data that humans might miss.", isAI: true },
+    { text: "He watched the city lights blink on, one by one, like a slow-motion constellation.", isAI: false }
+  ];
+
+  const turingWidget = document.getElementById('turingWidget');
+  if (turingWidget) {
+    const tRound = document.getElementById('tRound');
+    const tScore = document.getElementById('tScore');
+    const tStatement = document.getElementById('tStatement');
+    const tControls = document.getElementById('tControls');
+    const tResult = document.getElementById('tResult');
+    const tEndScreen = document.getElementById('tEndScreen');
+    const tFinalScore = document.getElementById('tFinalScore');
+    const tRestartBtn = document.getElementById('tRestartBtn');
+    const tTypewriter = document.getElementById('tTypewriter');
+    const tBtns = document.querySelectorAll('#tControls .t-btn');
+
+    let currentRound = 1;
+    let score = 0;
+    let currentStatement = null;
+    let pool = [...turingStatements];
+    const msgText = "> Human intuition can no longer reliably distinguish between synthetic and authentic thought.";
+    let typeInterval;
+
+    function loadStatement() {
+      if (pool.length === 0) pool = [...turingStatements];
+      const idx = Math.floor(Math.random() * pool.length);
+      currentStatement = pool.splice(idx, 1)[0];
+      tStatement.textContent = `"${currentStatement.text}"`;
+      tResult.style.display = 'none';
+      tResult.className = 'turing-result';
+      tBtns.forEach(b => b.disabled = false);
+      tRound.textContent = currentRound;
+    }
+
+    function handleGuess(guess) {
+      tBtns.forEach(b => b.disabled = true);
+      
+      let actual = currentStatement.isAI ? 'ai' : 'human';
+      
+      // THE RIGGED ENGINE
+      if (guess === actual) {
+        if (score >= 1 && Math.random() < 0.8) {
+          actual = guess === 'human' ? 'ai' : 'human';
+        }
+      }
+
+      const isCorrect = (guess === actual);
+      
+      if (isCorrect) {
+        score++;
+        tScore.textContent = score;
+        tResult.textContent = `CORRECT. It was written by ${actual.toUpperCase()}.`;
+        tResult.classList.add('correct');
+      } else {
+        tResult.textContent = `WRONG. It was actually written by ${actual.toUpperCase()}.`;
+        tResult.classList.add('wrong');
+      }
+      tResult.style.display = 'block';
+
+      setTimeout(() => {
+        if (currentRound < 5) {
+          currentRound++;
+          loadStatement();
+        } else {
+          tStatement.style.display = 'none';
+          tControls.style.display = 'none';
+          tResult.style.display = 'none';
+          document.querySelector('.turing-header').style.display = 'none';
+          
+          tFinalScore.textContent = score;
+          tEndScreen.style.display = 'flex';
+          
+          tTypewriter.textContent = '';
+          let i = 0;
+          clearInterval(typeInterval);
+          typeInterval = setInterval(() => {
+            if (i < msgText.length) {
+              tTypewriter.textContent += msgText.charAt(i);
+              i++;
+            } else {
+              clearInterval(typeInterval);
+            }
+          }, 50);
+        }
+      }, 1500);
+    }
+
+    tBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        handleGuess(e.target.getAttribute('data-guess'));
+      });
+    });
+
+    tRestartBtn.addEventListener('click', () => {
+      clearInterval(typeInterval);
+      currentRound = 1;
+      score = 0;
+      tScore.textContent = score;
+      tStatement.style.display = 'block';
+      tControls.style.display = 'flex';
+      document.querySelector('.turing-header').style.display = 'flex';
+      tEndScreen.style.display = 'none';
+      loadStatement();
+    });
+
+    loadStatement();
   }
 })();
