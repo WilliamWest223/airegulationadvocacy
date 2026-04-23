@@ -5,23 +5,36 @@
   const cursorGlow = document.getElementById("cursorGlow");
   if (cursorGlow) {
     document.addEventListener("mousemove", (e) => {
-      cursorGlow.style.left = e.clientX + "px";
-      cursorGlow.style.top = e.clientY + "px";
-    });
+      cursorGlow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+    }, { passive: true });
   }
+
+  // ---------- CANVAS VISIBILITY OBSERVER ----------
+  let isHeroVisible = true;
+  let isMatrixVisible = false;
+  const canvasObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.target.id === 'heroCanvas') isHeroVisible = entry.isIntersecting;
+      if (entry.target.id === 'matrixCanvas') isMatrixVisible = entry.isIntersecting;
+    });
+  }, { rootMargin: "200px" });
 
   // ---------- PROGRESS BAR & NAV ----------
   const progress = document.getElementById("progress");
   const nav = document.getElementById("nav");
   const hero = document.querySelector(".hero");
+  let cachedHeroHeight = hero ? hero.offsetHeight : 600;
+  
+  window.addEventListener('resize', () => {
+    if (hero) cachedHeroHeight = hero.offsetHeight;
+  }, { passive: true });
 
   function onScroll() {
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     progress.style.width = Math.min(100, (scrollTop / docHeight) * 100) + "%";
 
-    const heroHeight = hero ? hero.offsetHeight : 600;
-    nav.classList.toggle("visible", scrollTop > heroHeight * 0.7);
+    nav.classList.toggle("visible", scrollTop > cachedHeroHeight * 0.7);
 
     updateChapterNav(scrollTop);
   }
@@ -168,25 +181,29 @@
 
     for (let i = 0; i < COUNT; i++) particles.push(new Particle());
 
+    canvasObserver.observe(canvas);
+
     function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < CONNECT_DIST * CONNECT_DIST) {
-            const alpha = (1 - Math.sqrt(d2) / CONNECT_DIST) * 0.12;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(17,20,24,${alpha})`;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
+      if (isHeroVisible) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < CONNECT_DIST * CONNECT_DIST) {
+              const alpha = (1 - Math.sqrt(d2) / CONNECT_DIST) * 0.12;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(17,20,24,${alpha})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
           }
         }
+        particles.forEach((p) => { p.update(); p.draw(); });
       }
-      particles.forEach((p) => { p.update(); p.draw(); });
       requestAnimationFrame(animate);
     }
     animate();
@@ -387,5 +404,329 @@
         },
       },
     });
+  });
+  // ---------- TEXT SCRAMBLE EFFECT ----------
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const scrambleTargets = document.querySelectorAll('.section-title');
+  
+  const scrambleIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        let iterations = 0;
+        const originalText = el.dataset.value || el.textContent.trim();
+        if (!el.dataset.value) el.dataset.value = originalText;
+        
+        clearInterval(el.interval);
+        
+        el.interval = setInterval(() => {
+          el.textContent = originalText
+            .split("")
+            .map((letter, index) => {
+              if (index < iterations || letter === " ") {
+                return originalText[index];
+              }
+              return letters[Math.floor(Math.random() * 26)];
+            })
+            .join("");
+          
+          if (iterations >= originalText.length) clearInterval(el.interval);
+          iterations += 1 / 2;
+        }, 30);
+        
+        scrambleIO.unobserve(el);
+      }
+    });
+  }, { threshold: 0.15 });
+  
+  scrambleTargets.forEach(t => scrambleIO.observe(t));
+
+  // ---------- MAGNETIC BUTTON EFFECT ----------
+  const magneticEls = document.querySelectorAll('.cta-button');
+  magneticEls.forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      el.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = `translate(0px, 0px)`;
+    });
+  });
+
+  // ---------- 3D TILT ON CARDS ----------
+  const cards = document.querySelectorAll('.principle-card');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -4;
+      const rotateY = ((x - centerX) / centerX) * 4;
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`; 
+    });
+  });
+
+  // ---------- TERMINAL TYPING EFFECT ----------
+  const heroSub = document.querySelector('.hero-sub-head');
+  if (heroSub) {
+    const text = heroSub.textContent.trim();
+    heroSub.textContent = "";
+    let i = 0;
+    // wait for hero animation to complete before typing
+    setTimeout(() => {
+      const typeInterval = setInterval(() => {
+        heroSub.textContent = text.slice(0, i + 1);
+        i++;
+        if (i >= text.length) {
+          clearInterval(typeInterval);
+        }
+      }, 35);
+    }, 1100);
+  }
+
+  // ---------- MATRIX RAIN ----------
+  const mCanvas = document.getElementById('matrixCanvas');
+  if (mCanvas) {
+    const mCtx = mCanvas.getContext('2d');
+    
+    function resizeMatrix() {
+      mCanvas.width = mCanvas.parentElement.offsetWidth;
+      mCanvas.height = mCanvas.parentElement.offsetHeight;
+    }
+    resizeMatrix();
+    window.addEventListener('resize', resizeMatrix);
+
+    const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const fontSize = 16;
+    let columns = mCanvas.width / fontSize;
+    let drops = [];
+    for(let x = 0; x < columns; x++) {
+      drops[x] = Math.random() * mCanvas.height; 
+    }
+
+    // handle resize
+    window.addEventListener('resize', () => {
+      columns = mCanvas.width / fontSize;
+      const newDrops = [];
+      for(let x = 0; x < columns; x++) {
+        newDrops[x] = drops[x] || Math.random() * mCanvas.height; 
+      }
+      drops = newDrops;
+    });
+
+    canvasObserver.observe(mCanvas);
+
+    setInterval(() => {
+      if (!isMatrixVisible) return;
+      
+      mCtx.fillStyle = 'rgba(17, 20, 24, 0.1)'; // faint ink
+      mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+      
+      mCtx.fillStyle = 'rgba(247, 244, 238, 0.18)'; // paper, faint
+      mCtx.font = fontSize + 'px "IBM Plex Mono", monospace';
+      
+      for(let i = 0; i < drops.length; i++) {
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        mCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+        
+        if(drops[i] * fontSize > mCanvas.height && Math.random() > 0.985) {
+          drops[i] = 0;
+        }
+        drops[i] += 0.65;
+      }
+    }, 35);
+  }
+  // ---------- ARTICLE MODAL LOGIC ----------
+  const articlesData = {
+    "1": {
+      title: "Global Jobs Exposed to AI Disruption",
+      body: "<p>According to recent IMF analysis, nearly 40% of global employment is exposed to AI, rising to 60% in advanced economies. Unlike previous waves of automation that primarily affected manual labor, generative AI directly impacts high-skill cognitive roles.</p><p>This disruption threatens to exacerbate inequality, rewarding those who can seamlessly integrate AI into their workflows while displacing workers whose core tasks are fully automated. The transition requires unprecedented investment in reskilling frameworks.</p>",
+      chartConfig: {
+        type: 'bar',
+        data: {
+          labels: ['Advanced Econ.', 'Emerging Mkts.', 'Low-Income'],
+          datasets: [{
+            label: '% of Jobs Exposed',
+            data: [60, 40, 26],
+            backgroundColor: ['rgba(194,65,12,0.9)', 'rgba(194,65,12,0.5)', 'rgba(17,20,24,0.3)'],
+            borderRadius: 4
+          }]
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          plugins: { legend: { display: false } },
+          scales: { 
+            y: { max: 100, title: { display: true, text: 'Exposure (%)' } },
+            x: { grid: { display: false } }
+          } 
+        }
+      }
+    },
+    "2": {
+      title: "The Ubiquity of AI in Education",
+      body: "<p>By 2026, an estimated 85% of university students actively utilize AI tools for academic research, writing, and problem-solving. This rapid adoption outpaces institutional policy, creating a 'shadow curriculum' where the mechanics of learning are outsourced to algorithms.</p><p>While these tools offer personalized tutoring, they risk short-circuiting the productive struggle necessary for cognitive development. We face a future where students can produce flawless outputs without internalizing the underlying concepts.</p>",
+      chartConfig: {
+        type: 'radar',
+        data: {
+          labels: ['Writing', 'Coding', 'Research', 'Math', 'Language', 'Arts'],
+          datasets: [{
+            label: 'Adoption Rate (%)',
+            data: [92, 88, 85, 70, 78, 45],
+            backgroundColor: 'rgba(194,65,12,0.15)',
+            borderColor: '#C2410C',
+            borderWidth: 2,
+            pointBackgroundColor: '#C2410C',
+            pointRadius: 4
+          }]
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          plugins: { legend: { display: false } },
+          scales: { 
+            r: { 
+              angleLines: { color: 'rgba(17,20,24,0.08)' }, 
+              grid: { color: 'rgba(17,20,24,0.08)' },
+              ticks: { display: false },
+              pointLabels: { font: { size: 11 } }
+            } 
+          } 
+        }
+      }
+    },
+    "3": {
+      title: "The Centralization of AI Infrastructure",
+      body: "<p>The foundation models driving the AI revolution require astronomical computational resources. Consequently, the top 5 tech giants effectively control the vast majority of AI infrastructure, from silicon to cloud computing to training data.</p><p>This market concentration creates a dangerous bottleneck for innovation. It risks establishing a neo-feudal digital landscape where a handful of unelected corporate entities dictate the rules, access, and pricing of society's most critical new utility.</p>",
+      chartConfig: {
+        type: 'bar',
+        data: {
+          labels: ['Compute Power', 'Training Data', 'Capital Funding'],
+          datasets: [
+            { label: 'Big Tech Giants', data: [98, 92, 95], backgroundColor: 'rgba(194,65,12,0.9)', borderRadius: 2 },
+            { label: 'Average Startup', data: [12, 18, 5], backgroundColor: 'rgba(17,20,24,0.7)', borderRadius: 2 }
+          ]
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          indexAxis: 'y',
+          plugins: { tooltip: { mode: 'index', intersect: false } },
+          scales: { 
+            x: { max: 100, title: { display: true, text: 'Resource Scale (%)' } },
+            y: { grid: { display: false } }
+          }
+        }
+      }
+    },
+    "4": {
+      title: "Algorithmic Filtering in Hiring",
+      body: "<p>Modern HR departments are overwhelmed, leading to the widespread deployment of AI resume screening systems that process millions of applications daily. These proprietary algorithms act as opaque gatekeepers to the workforce.</p><p>Because they are trained on historical hiring data, they frequently replicate and scale past biases. Candidates are often discarded for arbitrary correlations—such as zip code, specific keywords, or gaps in employment—without ever being evaluated by a human being.</p>",
+      chartConfig: {
+        type: 'bar',
+        data: {
+          labels: ['Received', 'AI Filtered', 'Human Review', 'Interviewed', 'Hired'],
+          datasets: [{
+            label: 'Candidates',
+            data: [10000, 1500, 300, 45, 5],
+            backgroundColor: ['#111418', '#2a2d33', '#6b6963', '#C2410C', '#9a3308']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      }
+    },
+    "5": {
+      title: "The Bias in AI Detection",
+      body: "<p>In an attempt to police the use of generative AI, institutions rely on AI text detection tools. However, rigorous testing reveals these tools are fundamentally flawed and disproportionately flag the work of non-native English speakers as 'AI-generated.'</p><p>This false-positive bias stems from the fact that non-native speakers often utilize simpler vocabulary and more predictable sentence structures—the exact metrics these detectors use to identify algorithmic generation. The result is systemic academic penalization of international students.</p>",
+      chartConfig: {
+        type: 'scatter',
+        data: {
+          datasets: [
+            { label: 'Native Speakers', data: [{x: 10, y: 5}, {x: 20, y: 8}, {x: 30, y: 12}, {x: 40, y: 18}, {x: 50, y: 22}], backgroundColor: 'rgba(17,20,24,0.7)' },
+            { label: 'Non-Native Speakers', data: [{x: 15, y: 45}, {x: 25, y: 62}, {x: 35, y: 78}, {x: 45, y: 88}, {x: 55, y: 94}], backgroundColor: 'rgba(194,65,12,0.9)' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Text Predictability Score' } }, y: { title: { display: true, text: 'AI Flagged Probability (%)' } } } }
+      }
+    },
+    "6": {
+      title: "The Academic Witch Hunt",
+      body: "<p>Instead of adapting to new technology, some professors have taken to blindly feeding student papers into 'AI detection' software that is scientifically proven to be wildly inaccurate. These black-box systems essentially act as random number generators, completely failing to understand nuance or context.</p><p>By treating these flawed detectors as absolute truth, lazy educators are falsely accusing innocent students of academic dishonesty—destroying academic records based on the flip of an algorithmic coin rather than doing the actual work of evaluating student progress.</p>",
+      chartConfig: {
+        type: 'doughnut',
+        data: {
+          labels: ['False Positives', 'Accurate Detections', 'False Negatives'],
+          datasets: [{
+            data: [45, 35, 20],
+            backgroundColor: ['rgba(194,65,12,0.9)', 'rgba(17,20,24,0.7)', 'rgba(107,105,99,0.5)'],
+            borderWidth: 0
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { position: 'bottom' } } }
+      }
+    }
+  };
+
+  const modal = document.getElementById('articleModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  const modalCanvas = document.getElementById('modalCanvas');
+  const closeBtn = document.getElementById('modalClose');
+  const backdrop = document.getElementById('modalBackdrop');
+  let currentChart = null;
+
+  const tickerItems = document.querySelectorAll('.ticker-item');
+  tickerItems.forEach(item => {
+    item.addEventListener('mousemove', (e) => {
+      const rect = item.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      item.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
+    });
+    item.addEventListener('mouseleave', () => {
+      item.style.transform = `translate(0, 0)`;
+    });
+
+    item.addEventListener('click', () => {
+      const id = item.dataset.article;
+      const data = articlesData[id];
+      if (!data) return;
+
+      modalTitle.textContent = data.title;
+      modalBody.innerHTML = data.body;
+
+      if (currentChart) {
+        currentChart.destroy();
+      }
+
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      setTimeout(() => {
+        if(typeof Chart !== 'undefined') {
+          Chart.defaults.font.family = '"IBM Plex Mono", monospace';
+          Chart.defaults.color = "#6b6963";
+          currentChart = new Chart(modalCanvas, data.chartConfig);
+        }
+      }, 350);
+    });
+  });
+
+  function closeModal() {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (backdrop) backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
   });
 })();

@@ -77,28 +77,32 @@
   </a>
 </header>
 
-<div class="ticker-wrap" aria-hidden="true">
+<div class="ticker-wrap" aria-label="Interactive news ticker">
   <div class="ticker-inner">
-    <span class="ticker-item"><span class="ticker-accent">40%</span> of global jobs exposed to AI &mdash; IMF</span>
-    <span class="ticker-sep">◆</span>
-    <span class="ticker-item"><span class="ticker-accent">85%</span> of students use AI tools for academic work in 2026</span>
-    <span class="ticker-sep">◆</span>
-    <span class="ticker-item">Top <span class="ticker-accent">5</span> tech giants control the majority of AI infrastructure</span>
-    <span class="ticker-sep">◆</span>
-    <span class="ticker-item">AI hiring systems process <span class="ticker-accent">millions</span> of applications daily</span>
-    <span class="ticker-sep">◆</span>
-    <span class="ticker-item">AI detection tools disproportionately flag <span class="ticker-accent">non-native</span> English speakers</span>
-    <span class="ticker-sep">◆</span>
-    <span class="ticker-item"><span class="ticker-accent">40%</span> of global jobs exposed to AI &mdash; IMF</span>
-    <span class="ticker-sep">◆</span>
-    <span class="ticker-item"><span class="ticker-accent">85%</span> of students use AI tools for academic work in 2026</span>
-    <span class="ticker-sep">◆</span>
-    <span class="ticker-item">Top <span class="ticker-accent">5</span> tech giants control the majority of AI infrastructure</span>
-    <span class="ticker-sep">◆</span>
-    <span class="ticker-item">AI hiring systems process <span class="ticker-accent">millions</span> of applications daily</span>
-    <span class="ticker-sep">◆</span>
-    <span class="ticker-item">AI detection tools disproportionately flag <span class="ticker-accent">non-native</span> English speakers</span>
-    <span class="ticker-sep">◆</span>
+    <button class="ticker-item" data-article="1"><span class="ticker-accent">40%</span> of global jobs exposed to AI &mdash; IMF</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="2"><span class="ticker-accent">85%</span> of students use AI tools for academic work in 2026</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="3">Top <span class="ticker-accent">5</span> tech giants control the majority of AI infrastructure</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="4">AI hiring systems process <span class="ticker-accent">millions</span> of applications daily</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="5">AI detection tools disproportionately flag <span class="ticker-accent">non-native</span> English speakers</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="6">Professors blindly trusting <span class="ticker-accent">flawed</span> AI detectors ruin academic records</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="1" tabindex="-1"><span class="ticker-accent">40%</span> of global jobs exposed to AI &mdash; IMF</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="2" tabindex="-1"><span class="ticker-accent">85%</span> of students use AI tools for academic work in 2026</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="3" tabindex="-1">Top <span class="ticker-accent">5</span> tech giants control the majority of AI infrastructure</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="4" tabindex="-1">AI hiring systems process <span class="ticker-accent">millions</span> of applications daily</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="5" tabindex="-1">AI detection tools disproportionately flag <span class="ticker-accent">non-native</span> English speakers</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
+    <button class="ticker-item" data-article="6" tabindex="-1">Professors blindly trusting <span class="ticker-accent">flawed</span> AI detectors ruin academic records</button>
+    <span class="ticker-sep" aria-hidden="true">◆</span>
   </div>
 </div>
 
@@ -225,6 +229,7 @@
 
   <!-- SECTION 04 — CALL TO ACTION -->
   <section class="section section-dark" id="action">
+    <canvas class="matrix-canvas" id="matrixCanvas" aria-hidden="true"></canvas>
     <div class="scanlines" aria-hidden="true"></div>
 
     <div class="section-header">
@@ -303,6 +308,30 @@
     </p>
   </div>
 </footer>
+
+<!-- ARTICLE MODAL -->
+<div class="article-modal" id="articleModal" aria-hidden="true">
+  <div class="article-modal-backdrop" id="modalBackdrop"></div>
+  <div class="article-modal-content">
+    <button class="article-modal-close" id="modalClose" aria-label="Close article">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+    <div class="article-modal-grid">
+      <div class="article-modal-text">
+        <p class="overline">Deep Dive</p>
+        <h3 class="article-modal-title" id="modalTitle"></h3>
+        <div class="article-modal-body" id="modalBody"></div>
+      </div>
+      <div class="article-modal-visual">
+        <div class="modal-chart-container">
+          <canvas id="modalCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="script.js"></script>
