@@ -339,20 +339,23 @@
           data: [5, 12, 28, 51, 68, 79, 85],
           borderColor: C.signal,
           backgroundColor: grad,
-          borderWidth: 2,
+          borderWidth: 3,
           pointBackgroundColor: C.signal,
           pointBorderColor: C.paper,
-          pointBorderWidth: 1.5,
-          pointRadius: 4,
-          pointHoverRadius: 6,
+          pointBorderWidth: 2,
+          pointRadius: 6,
           fill: true,
           tension: 0.4,
         }],
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
-        animation: { duration: 1400, easing: "easeOutQuart" },
+        maintainAspectRatio: false,
+        animation: { 
+          duration: 1400, 
+          easing: "easeOutQuart",
+          delay: (ctx) => ctx.dataIndex * 80 
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -362,7 +365,7 @@
         },
         scales: {
           x: {
-            grid: { color: C.grid },
+            grid: { display: false },
             border: { display: false },
             ticks: { font: { size: 10 } },
           },
@@ -386,14 +389,14 @@
         datasets: [{
           data: [78, 14, 8],
           backgroundColor: [C.signal, "#2a2d33", "#9a8f82"],
-          borderColor: "#efeade",
-          borderWidth: 3,
+          borderColor: C.paper,
+          borderWidth: 2,
           hoverOffset: 8,
         }],
       },
       options: {
         responsive: true,
-        cutout: "74%",
+        cutout: "65%",
         animation: { animateRotate: true, duration: 1300, easing: "easeOutQuart" },
         plugins: {
           legend: { display: false },
@@ -405,6 +408,7 @@
       },
     });
   });
+
   // ---------- TEXT SCRAMBLE EFFECT ----------
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const scrambleTargets = document.querySelectorAll('.section-title');
