@@ -733,4 +733,137 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
   });
+
+  // ---------- JOB RISK ANALYZER ----------
+  const jobInput = document.getElementById('jobInput');
+  const analyzeJobBtn = document.getElementById('analyzeJobBtn');
+  const riskResults = document.getElementById('riskResults');
+  const riskValue = document.getElementById('riskValue');
+  const riskBar = document.getElementById('riskBar');
+  const riskTime = document.getElementById('riskTime');
+  const riskCognitive = document.getElementById('riskCognitive');
+  const riskEcon = document.getElementById('riskEcon');
+  const riskVerdictBox = document.getElementById('riskVerdictBox');
+  const riskVerdict = document.getElementById('riskVerdict');
+
+  if (analyzeJobBtn && jobInput) {
+    analyzeJobBtn.addEventListener('click', () => {
+      const job = jobInput.value.trim().toLowerCase();
+      if (!job) return;
+
+      riskResults.classList.remove('active');
+      riskVerdictBox.classList.remove('cooked');
+      riskBar.style.width = '0%';
+      
+      void riskResults.offsetWidth;
+      riskResults.classList.add('active');
+
+      let riskScore = 0;
+      let timeYears = "";
+      let cogOverlap = "";
+      let econVuln = "";
+      let verdict = "";
+      let isCooked = false;
+
+      if (job.includes('professor')) {
+        riskScore = 100;
+        timeYears = "3.0 Years";
+        cogOverlap = "99%";
+        econVuln = "9.9 / 10";
+        verdict = "COOKED";
+        isCooked = true;
+      } else {
+        let hash = 0;
+        for (let i = 0; i < job.length; i++) {
+          hash = job.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        hash = Math.abs(hash);
+        
+        const stemWords = ['engineer', 'software', 'code', 'developer', 'science', 'physics', 'math', 'cyber', 'data', 'biology', 'chemistry', 'technology', 'med'];
+        const nonStemWords = ['english', 'history', 'philosophy', 'sociology', 'art', 'music', 'theater', 'communication', 'literature', 'writing', 'linguistics', 'gender', 'humanities', 'anthropology', 'psychology', 'teacher'];
+        const manualLabor = ['plumber', 'electrician', 'trade', 'carpenter', 'welder', 'mechanic', 'construction'];
+
+        let isStem = stemWords.some(w => job.includes(w));
+        let isNonStem = nonStemWords.some(w => job.includes(w));
+        let isLabor = manualLabor.some(w => job.includes(w));
+
+        if (isLabor) {
+          riskScore = (hash % 15) + 5; // 5-20%
+        } else if (isStem) {
+          riskScore = (hash % 25) + 15; // 15-40%
+        } else if (isNonStem) {
+          riskScore = (hash % 20) + 80; // 80-100%
+        } else {
+          riskScore = (hash % 40) + 30; // 30-70%
+        }
+        
+        // Ensure english is always cooked
+        if (job.includes('english')) {
+          riskScore = Math.max(riskScore, 95);
+        }
+
+        timeYears = ((100 - riskScore) / 10).toFixed(1) + " Years";
+        
+        // Generate correlated metrics
+        const cogScore = Math.min(98, riskScore + (hash % 10));
+        cogOverlap = cogScore + "%";
+        
+        const econScore = (riskScore / 10).toFixed(1);
+        econVuln = econScore + " / 10";
+        
+        if (riskScore >= 90) {
+          verdict = "COOKED";
+          isCooked = true;
+        } else if (riskScore >= 75) {
+          verdict = "CRITICAL EXPOSURE";
+        } else if (riskScore >= 50) {
+          verdict = "HIGH RISK";
+        } else if (riskScore >= 25) {
+          verdict = "MODERATE IMPACT";
+        } else {
+          verdict = "SAFE FOR NOW";
+        }
+      }
+
+      setTimeout(() => {
+        riskBar.style.width = riskScore + '%';
+        if (isCooked) {
+          riskVerdictBox.classList.add('cooked');
+        }
+      }, 50);
+
+      const duration = 1000;
+      const startTime = performance.now();
+      
+      function updateCounter(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const displayScore = Math.floor(easeProgress * riskScore);
+        
+        riskValue.textContent = displayScore + '%';
+        
+        if (progress < 1) {
+          requestAnimationFrame(updateCounter);
+        } else {
+          riskValue.textContent = riskScore + '%';
+          riskTime.textContent = timeYears;
+          riskCognitive.textContent = cogOverlap;
+          riskEcon.textContent = econVuln;
+          riskVerdict.textContent = verdict;
+        }
+      }
+      
+      riskTime.textContent = "--";
+      riskCognitive.textContent = "--";
+      riskEcon.textContent = "--";
+      riskVerdict.textContent = "ANALYZING...";
+      requestAnimationFrame(updateCounter);
+    });
+    
+    jobInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') analyzeJobBtn.click();
+    });
+  }
 })();

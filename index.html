@@ -148,6 +148,39 @@
           <li>AI automation forces a massive "Skill Imbalance," rewarding highly educated, adaptable workers while squeezing out middle-skill jobs and putting entry-level workers at high risk.</li>
           <li>In hiring, AI-powered systems are already processing millions of applications and inadvertently discriminating against candidates by filtering them out based on proxy variables like zip codes or graduation years.</li>
         </ul>
+        
+        <div class="risk-analyzer">
+          <p class="risk-prompt">Ask AI about your career exposure</p>
+          <div class="risk-input-group">
+            <input type="text" id="jobInput" placeholder="Enter your major or job title..." autocomplete="off">
+            <button id="analyzeJobBtn" class="risk-btn">Analyze</button>
+          </div>
+          <div id="riskResults" class="risk-results">
+            <div class="risk-metric">
+              <span class="risk-metric-label">Automation Risk</span>
+              <span class="risk-metric-value" id="riskValue">0%</span>
+            </div>
+            <div class="risk-bar-bg">
+              <div class="risk-bar-fill" id="riskBar"></div>
+            </div>
+            <div class="risk-metric">
+              <span class="risk-metric-label">Cognitive Overlap</span>
+              <span class="risk-metric-value" id="riskCognitive">--</span>
+            </div>
+            <div class="risk-metric">
+              <span class="risk-metric-label">Economic Vulnerability</span>
+              <span class="risk-metric-value" id="riskEcon">--</span>
+            </div>
+            <div class="risk-metric">
+              <span class="risk-metric-label">Est. Disruption Timeline</span>
+              <span class="risk-metric-value" id="riskTime">--</span>
+            </div>
+            <div class="risk-verdict-box" id="riskVerdictBox">
+              <span class="risk-verdict-label">System Verdict:</span>
+              <span class="risk-verdict-text" id="riskVerdict">PENDING</span>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="split-right">
         <div class="chart-wrapper">
