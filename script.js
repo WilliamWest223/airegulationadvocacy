@@ -252,6 +252,7 @@
 
   Chart.defaults.font.family = '"IBM Plex Mono", monospace';
   Chart.defaults.color = "#6b6963";
+  Chart.defaults.animation = { duration: 1250, easing: "easeOutQuart" };
 
   const C = {
     signal: "#C2410C",
@@ -269,10 +270,15 @@
     borderColor: "rgba(194,65,12,0.3)",
     borderWidth: 1,
   };
+  const chartAnim = { duration: 1200, easing: "easeOutQuart" };
 
   function lazyChart(id, initFn) {
     const el = document.getElementById(id);
     if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      initFn(el);
+      return;
+    }
     const obs = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) { initFn(el); obs.disconnect(); }
     }, { threshold: 0.15 });
@@ -298,7 +304,7 @@
         indexAxis: "y",
         responsive: true,
         maintainAspectRatio: true,
-        animation: { duration: 1100, easing: "easeOutQuart", delay: (ctx) => ctx.dataIndex * 80 },
+        animation: { ...chartAnim, duration: 1350, delay: (ctx) => ctx.dataIndex * 90 },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -351,11 +357,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: { 
-          duration: 1400, 
-          easing: "easeOutQuart",
-          delay: (ctx) => ctx.dataIndex * 80 
-        },
+        animation: { ...chartAnim, duration: 1450, delay: (ctx) => ctx.dataIndex * 90 },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -396,8 +398,9 @@
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         cutout: "65%",
-        animation: { animateRotate: true, duration: 1300, easing: "easeOutQuart" },
+        animation: { ...chartAnim, duration: 1400, animateRotate: true },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -678,10 +681,55 @@
     }
   };
 
+  function getModalChartScales(type) {
+    if (type === "radar") {
+      return {
+        r: {
+          min: 0,
+          max: 100,
+          angleLines: { color: "rgba(17,20,24,0.08)" },
+          grid: { color: "rgba(17,20,24,0.08)" },
+          ticks: { display: false },
+          pointLabels: { color: "#3b3831", font: { size: 11 } }
+        }
+      };
+    }
+    if (type === "doughnut" || type === "pie") return undefined;
+    return {
+      x: { grid: { color: C.grid }, border: { display: false }, ticks: { color: "#59564f" } },
+      y: { grid: { color: C.grid }, border: { display: false }, ticks: { color: "#59564f" } }
+    };
+  }
+
+  function buildModalChartConfig(baseConfig) {
+    const existingOptions = baseConfig.options || {};
+    return {
+      ...baseConfig,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { ...chartAnim, duration: 1350, ...(existingOptions.animation || {}) },
+        interaction: { mode: "nearest", intersect: false, ...(existingOptions.interaction || {}) },
+        layout: { padding: 6, ...(existingOptions.layout || {}) },
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            labels: { boxWidth: 12, boxHeight: 12, color: "#444139", padding: 14 }
+          },
+          tooltip: { ...tooltipDefaults },
+          ...(existingOptions.plugins || {})
+        },
+        scales: getModalChartScales(baseConfig.type),
+        ...(existingOptions || {})
+      }
+    };
+  }
+
   const modal = document.getElementById('articleModal');
   const modalTitle = document.getElementById('modalTitle');
   const modalBody = document.getElementById('modalBody');
-  const modalCanvas = document.getElementById('modalCanvas');
+  const modalCanvas = document.getElementById('modalChart');
   const closeBtn = document.getElementById('modalClose');
   const backdrop = document.getElementById('modalBackdrop');
   let currentChart = null;
@@ -714,10 +762,11 @@
       document.body.style.overflow = 'hidden';
 
       setTimeout(() => {
-        if(typeof Chart !== 'undefined') {
+        if(typeof Chart !== 'undefined' && modalCanvas) {
           Chart.defaults.font.family = '"IBM Plex Mono", monospace';
           Chart.defaults.color = "#6b6963";
-          currentChart = new Chart(modalCanvas, data.chartConfig);
+          const modalConfig = buildModalChartConfig(data.chartConfig);
+          currentChart = new Chart(modalCanvas, modalConfig);
         }
       }, 350);
     });
@@ -726,6 +775,10 @@
   function closeModal() {
     modal.classList.remove('active');
     document.body.style.overflow = '';
+    if (currentChart) {
+      currentChart.destroy();
+      currentChart = null;
+    }
   }
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
@@ -1040,6 +1093,7 @@
 
   const turingWidget = document.getElementById('turingWidget');
   if (turingWidget) {
+    const tHeader = turingWidget.querySelector('.turing-header');
     const tRound = document.getElementById('tRound');
     const tScore = document.getElementById('tScore');
     const tStatement = document.getElementById('tStatement');
@@ -1057,6 +1111,22 @@
     let pool = [...turingStatements];
     const msgText = "> Human intuition can no longer reliably distinguish between synthetic and authentic thought.";
     let typeInterval;
+    let nextRoundTimeout;
+
+    if (
+      !tHeader ||
+      !tRound ||
+      !tScore ||
+      !tStatement ||
+      !tControls ||
+      !tResult ||
+      !tEndScreen ||
+      !tFinalScore ||
+      !tRestartBtn ||
+      !tTypewriter
+    ) {
+      return;
+    }
 
     function loadStatement() {
       if (pool.length === 0) pool = [...turingStatements];
@@ -1070,6 +1140,7 @@
     }
 
     function handleGuess(guess) {
+      if (!currentStatement) return;
       tBtns.forEach(b => b.disabled = true);
       
       let actual = currentStatement.isAI ? 'ai' : 'human';
@@ -1094,7 +1165,8 @@
       }
       tResult.style.display = 'block';
 
-      setTimeout(() => {
+      clearTimeout(nextRoundTimeout);
+      nextRoundTimeout = setTimeout(() => {
         if (currentRound < 5) {
           currentRound++;
           loadStatement();
@@ -1102,7 +1174,7 @@
           tStatement.style.display = 'none';
           tControls.style.display = 'none';
           tResult.style.display = 'none';
-          document.querySelector('.turing-header').style.display = 'none';
+          tHeader.style.display = 'none';
           
           tFinalScore.textContent = score;
           tEndScreen.style.display = 'flex';
@@ -1130,12 +1202,16 @@
 
     tRestartBtn.addEventListener('click', () => {
       clearInterval(typeInterval);
+      clearTimeout(nextRoundTimeout);
       currentRound = 1;
       score = 0;
+      pool = [...turingStatements];
+      currentStatement = null;
       tScore.textContent = score;
       tStatement.style.display = 'block';
       tControls.style.display = 'flex';
-      document.querySelector('.turing-header').style.display = 'flex';
+      tResult.style.display = 'none';
+      tHeader.style.display = 'flex';
       tEndScreen.style.display = 'none';
       loadStatement();
     });

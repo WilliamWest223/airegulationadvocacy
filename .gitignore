@@ -1,0 +1,11 @@
+# Agent report logs (keep instructions, ignore ongoing log files)
+init/**/reports/*.md
+!init/**/reports/.gitkeep
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.swo

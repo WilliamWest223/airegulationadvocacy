@@ -222,10 +222,10 @@
             <p id="tStatement" class="turing-statement">Loading statement...</p>
           </div>
           <div class="turing-controls" id="tControls">
-            <button class="t-btn" data-guess="human">Human</button>
-            <button class="t-btn" data-guess="ai">AI</button>
+            <button class="t-btn" data-guess="human" type="button">Human</button>
+            <button class="t-btn" data-guess="ai" type="button">AI</button>
           </div>
-          <div class="turing-result" id="tResult" style="display: none;"></div>
+          <div class="turing-result" id="tResult" style="display: none;" aria-live="polite"></div>
           
           <div class="turing-end-screen" id="tEndScreen" style="display: none;">
             <h4 class="t-end-title">TEST COMPLETE</h4>
@@ -234,7 +234,7 @@
               <p class="t-end-score"><span id="tFinalScore">0</span> / 5</p>
             </div>
             <p class="t-end-msg" id="tTypewriter"></p>
-            <button class="t-btn t-btn--reboot" id="tRestartBtn">Try Again</button>
+            <button class="t-btn t-btn--reboot" id="tRestartBtn" type="button">Try Again</button>
           </div>
         </div>
       </div>
@@ -415,7 +415,7 @@
         <h3 class="article-modal-title" id="modalTitle"></h3>
         <div class="article-modal-body" id="modalBody"></div>
       </div>
-      <div class="article-modal-chart-stage" id="modalChartContainer">
+      <div class="article-modal-visual modal-chart-container" id="modalChartContainer">
         <canvas id="modalChart"></canvas>
       </div>
     </div>

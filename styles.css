@@ -963,6 +963,9 @@ em {
   margin: 0 0 1.25rem 0;
 }
 .chart-note { color: var(--stone); font-weight: 400; }
+#workforceChart {
+  max-height: 320px;
+}
 
 /* Donut chart */
 .chart-wrapper--donut {
@@ -1382,14 +1385,13 @@ a:focus-visible, button:focus-visible {
 }
 .modal-chart-container {
   position: relative;
-  width: 100%;
-  max-width: 420px;
-  aspect-ratio: 1;
+  width: min(100%, 520px);
+  max-width: 520px;
+  height: min(420px, 58vh);
+  margin: 0 auto;
 }
 .modal-chart-container canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100% !important;
   height: 100% !important;
 }
@@ -1530,4 +1532,34 @@ a:focus-visible, button:focus-visible {
 .t-btn--reboot {
   margin-top: 1rem;
   max-width: 200px;
+}
+
+@media (max-width: 720px) {
+  .turing-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .turing-statement {
+    font-size: 1rem;
+  }
+
+  .turing-controls {
+    flex-direction: column;
+  }
+
+  .t-end-score-box {
+    width: 100%;
+    padding: 1.2rem 1rem;
+  }
+
+  .t-end-msg {
+    max-width: 100%;
+  }
+
+  .t-btn--reboot {
+    width: 100%;
+    max-width: none;
+  }
 }
