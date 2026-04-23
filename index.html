@@ -14,6 +14,8 @@
 
 <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 <div class="progress" id="progress" aria-hidden="true"></div>
+<!-- NEURAL CURSOR BACKGROUND -->
+<canvas id="cursorNetwork" aria-hidden="true"></canvas>
 
 <nav class="chapter-nav" id="chapterNav" aria-label="Page progress">
   <button class="chapter-dot active" data-target="top" aria-label="Hero"></button>
@@ -241,6 +243,19 @@
           <li>If the public can no longer reliably distinguish between real and fabricated information, the shared factual ground necessary for a functioning society dissolves.</li>
           <li>There is also a severe governance risk of "neo-feudalism," where only the largest, wealthiest tech giants can afford to control the infrastructure and data powering advanced AI, thereby concentrating wealth and power.</li>
         </ul>
+
+        <div class="hallucination-widget">
+          <p class="misinfo-prompt">Case Study: The ChatGPT Lawyer</p>
+          <div class="hallucination-doc">
+            <div class="doc-header">MATA v. AVIANCA, INC.</div>
+            <div class="doc-body">
+              <p>The plaintiff relies on <span class="hallucination-link" data-modal="modal-varghese">Varghese v. China Southern Airlines Co Ltd, 925 F.3d 1339 (11th Cir. 2019)</span> to support the tolling of the statute of limitations under the Montreal Convention.</p>
+              <p>Furthermore, the court in <span class="hallucination-link" data-modal="modal-shaboon">Shaboon v. Egyptair 2013 IL App (1st) 111279-U</span> previously held that internal airline policies do not supersede international carriage limits.</p>
+              <p>As explicitly stated in <span class="hallucination-link" data-modal="modal-peters">Peters v. KLM Royal Dutch Airlines</span>, "A delay in routing does not extinguish the fundamental claims of the passenger under Article 19."</p>
+            </div>
+            <p class="doc-footer">Click highlighted text to verify citations.</p>
+          </div>
+        </div>
       </div>
       <div class="split-right">
         <div class="chart-wrapper chart-wrapper--donut">
@@ -266,6 +281,22 @@
   <section class="section section-dark" id="action">
     <canvas class="matrix-canvas" id="matrixCanvas" aria-hidden="true"></canvas>
     <div class="scanlines" aria-hidden="true"></div>
+
+    <!-- ENVIRONMENTAL COST TRACKER -->
+    <div class="cost-tracker-container">
+      <div class="cost-metric">
+        <span class="cost-label">Global AI Water Consumption (Gallons)</span>
+        <span class="cost-value" id="waterCounter">2,504,192</span>
+        <span class="cost-sub">since page load</span>
+      </div>
+      <div class="cost-metric">
+        <span class="cost-label">Global AI Power Consumption (MWh)</span>
+        <span class="cost-value" id="powerCounter">184,302</span>
+        <span class="cost-sub">since page load</span>
+      </div>
+    </div>
+    
+    <hr class="tracker-divider" aria-hidden="true">
 
     <div class="section-header">
       <span class="section-number dark">04</span>
@@ -359,16 +390,43 @@
         <h3 class="article-modal-title" id="modalTitle"></h3>
         <div class="article-modal-body" id="modalBody"></div>
       </div>
-      <div class="article-modal-visual">
-        <div class="modal-chart-container">
-          <canvas id="modalCanvas"></canvas>
-        </div>
+      <div class="article-modal-chart-stage" id="modalChartContainer">
+        <canvas id="modalChart"></canvas>
       </div>
     </div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Hallucination Modals -->
+<div id="modal-varghese" class="h-modal-overlay">
+  <div class="h-modal-content">
+    <button class="h-modal-close" aria-label="Close">&times;</button>
+    <span class="h-tag">Hallucination Detected</span>
+    <h4>Varghese v. China Southern Airlines</h4>
+    <p><strong>The Reality:</strong> This case does not exist. ChatGPT completely fabricated the case name, the reporter citation (925 F.3d 1339), and the court (11th Cir.). The lawyers who submitted this brief were sanctioned by the judge.</p>
+  </div>
+</div>
+
+<div id="modal-shaboon" class="h-modal-overlay">
+  <div class="h-modal-content">
+    <button class="h-modal-close" aria-label="Close">&times;</button>
+    <span class="h-tag">Hallucination Detected</span>
+    <h4>Shaboon v. Egyptair</h4>
+    <p><strong>The Reality:</strong> While "Shaboon" is a real name and "Egyptair" is a real airline, ChatGPT hallucinated this specific lawsuit and merged it with a fake Illinois Appellate Court citation format. It's a classic example of an AI combining real-sounding elements into a completely fake fact.</p>
+  </div>
+</div>
+
+<div id="modal-peters" class="h-modal-overlay">
+  <div class="h-modal-content">
+    <button class="h-modal-close" aria-label="Close">&times;</button>
+    <span class="h-tag">Hallucination Detected</span>
+    <h4>Peters v. KLM Royal Dutch Airlines</h4>
+    <p><strong>The Reality:</strong> Not only did ChatGPT invent this case, it even generated a fake quote ("A delay in routing does not extinguish...") to make it look legitimate when the lawyers asked the AI to verify its sources.</p>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

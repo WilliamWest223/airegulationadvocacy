@@ -866,4 +866,105 @@
       if (e.key === 'Enter') analyzeJobBtn.click();
     });
   }
+
+  // ---------- PREMIUM FEATURE 1: DATA TRAIL CURSOR ----------
+  const cursorCanvas = document.getElementById('cursorNetwork');
+  if (cursorCanvas) {
+    const cCtx = cursorCanvas.getContext('2d');
+    let cw, ch;
+    
+    function resizeCursorCanvas() {
+      cw = cursorCanvas.width = window.innerWidth;
+      ch = cursorCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCursorCanvas);
+    resizeCursorCanvas();
+
+    const particles = [];
+    const hexChars = "0123456789ABCDEF";
+
+    document.addEventListener('mousemove', (e) => {
+      particles.push({
+        x: e.clientX + (Math.random() * 10 - 5),
+        y: e.clientY + (Math.random() * 10 - 5),
+        life: 1,
+        char: "0x" + hexChars[Math.floor(Math.random() * 16)] + hexChars[Math.floor(Math.random() * 16)]
+      });
+      if (particles.length > 40) particles.shift();
+    });
+
+    cCtx.font = "12px 'IBM Plex Mono', monospace";
+    
+    function drawDataTrail() {
+      cCtx.clearRect(0, 0, cw, ch);
+      
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.life -= 0.025;
+        p.y += 0.5;
+        
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+          i--;
+          continue;
+        }
+        
+        if (Math.random() < 0.1) {
+          p.char = "0x" + hexChars[Math.floor(Math.random() * 16)] + hexChars[Math.floor(Math.random() * 16)];
+        }
+        
+        cCtx.fillStyle = `rgba(194, 65, 12, ${p.life})`;
+        cCtx.fillText(p.char, p.x, p.y);
+      }
+      
+      requestAnimationFrame(drawDataTrail);
+    }
+    drawDataTrail();
+  }
+
+  // ---------- PREMIUM FEATURE 2: HALLUCINATION MODALS ----------
+  const hallucinationLinks = document.querySelectorAll('.hallucination-link');
+  const hModals = document.querySelectorAll('.h-modal-overlay');
+  const hCloseBtns = document.querySelectorAll('.h-modal-close');
+
+  function closeAllHModals() {
+    hModals.forEach(m => m.classList.remove('active'));
+  }
+
+  hallucinationLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      const modalId = link.getAttribute('data-modal');
+      const targetModal = document.getElementById(modalId);
+      if (targetModal) {
+        targetModal.classList.add('active');
+      }
+    });
+  });
+
+  hCloseBtns.forEach(btn => {
+    btn.addEventListener('click', closeAllHModals);
+  });
+
+  hModals.forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeAllHModals();
+    });
+  });
+
+  // ---------- PREMIUM FEATURE 3: LIVE COST TRACKER ----------
+  const waterCounter = document.getElementById('waterCounter');
+  const powerCounter = document.getElementById('powerCounter');
+  
+  if (waterCounter && powerCounter) {
+    let waterBase = 2504192;
+    let powerBase = 184302;
+    
+    setInterval(() => {
+      waterBase += Math.floor(Math.random() * 50) + 20; 
+      powerBase += Math.floor(Math.random() * 15) + 5;
+      
+      waterCounter.textContent = waterBase.toLocaleString();
+      powerCounter.textContent = powerBase.toLocaleString();
+    }, 100);
+  }
 })();

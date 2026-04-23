@@ -647,6 +647,217 @@ em {
 .risk-btn:hover {
   background: var(--signal);
 }
+/* ---------- PREMIUM INTERACTIVE FEATURES ---------- */
+
+/* 1. Neural Network Cursor Canvas */
+#cursorNetwork {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* 2. Hallucination Widget */
+.hallucination-widget {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+}
+.misinfo-prompt {
+  font-family: var(--f-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--stone);
+  margin: 0 0 1rem 0;
+}
+.hallucination-doc {
+  background: #fdfbf7;
+  color: #111418;
+  padding: 1.5rem;
+  border-left: 4px solid var(--signal);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  position: relative;
+}
+.doc-header {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #111418;
+  padding-bottom: 0.5rem;
+}
+.doc-body p {
+  margin-bottom: 1rem;
+}
+.hallucination-link {
+  background: rgba(194, 65, 12, 0.15);
+  border-bottom: 2px dotted var(--signal);
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0 4px;
+}
+.hallucination-link:hover {
+  background: rgba(194, 65, 12, 0.4);
+}
+.doc-footer {
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  color: var(--signal);
+  text-transform: uppercase;
+  margin-top: 1.5rem;
+  text-align: right;
+  margin-bottom: 0;
+}
+
+/* Hallucination Modals */
+.h-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(17, 20, 24, 0.9);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.h-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.h-modal-content {
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  border-top: 3px solid var(--signal);
+}
+.h-modal-overlay.active .h-modal-content {
+  transform: translateY(0);
+}
+.h-modal-close {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--stone);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.h-modal-close:hover {
+  color: var(--signal);
+}
+.h-tag {
+  display: inline-block;
+  background: rgba(194, 65, 12, 0.1);
+  color: var(--signal);
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(194, 65, 12, 0.3);
+}
+.h-modal-content h4 {
+  font-family: var(--f-sans);
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+}
+.h-modal-content p {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.h-modal-content strong {
+  color: var(--signal);
+}
+
+/* 3. Live Cost Tracker */
+.cost-tracker-container {
+  max-width: 1200px;
+  margin: 0 auto 2rem auto;
+  padding: 3rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  background: rgba(17, 20, 24, 0.6);
+  border: 1px solid rgba(194, 65, 12, 0.2);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.tracker-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(194, 65, 12, 0.5), transparent);
+  width: 100%;
+  margin: 0 0 3rem 0;
+  position: relative;
+  z-index: 2;
+}
+.cost-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cost-label {
+  font-family: var(--f-mono);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--stone);
+  margin-bottom: 1rem;
+}
+.cost-value {
+  font-family: var(--f-serif);
+  font-size: 4.5rem;
+  line-height: 1;
+  font-weight: 300;
+  color: var(--signal);
+  text-shadow: 0 0 20px rgba(194, 65, 12, 0.6);
+  margin-bottom: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+.cost-sub {
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  color: var(--stone);
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .cost-tracker-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .cost-value {
+    font-size: 3rem;
+  }
+}
+
 .risk-results {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
