@@ -1,6 +1,5 @@
-# Agent report logs (keep instructions, ignore ongoing log files)
-init/**/reports/*.md
-!init/**/reports/.gitkeep
+# Local agent init (not committed)
+init/
 
 # OS/editor junk
 .DS_Store
