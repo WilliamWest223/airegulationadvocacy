@@ -1,21 +1,27 @@
 (function () {
   "use strict";
+  const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const prefersReducedMotion = () => reducedMotionQuery.matches;
 
   // ---------- CURSOR GLOW ----------
   const cursorGlow = document.getElementById("cursorGlow");
-  if (cursorGlow) {
+  if (cursorGlow && !prefersReducedMotion()) {
     document.addEventListener("mousemove", (e) => {
       cursorGlow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
     }, { passive: true });
+  } else if (cursorGlow) {
+    cursorGlow.style.opacity = "0";
   }
 
   // ---------- CANVAS VISIBILITY OBSERVER ----------
   let isHeroVisible = true;
   let isMatrixVisible = false;
+  let isActionVisible = false;
   const canvasObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.target.id === 'heroCanvas') isHeroVisible = entry.isIntersecting;
       if (entry.target.id === 'matrixCanvas') isMatrixVisible = entry.isIntersecting;
+      if (entry.target.id === 'action') isActionVisible = entry.isIntersecting;
     });
   }, { rootMargin: "200px" });
 
@@ -59,7 +65,7 @@
       const el = document.getElementById(sectionIds[i]);
       if (!el) return;
       const navH = nav.classList.contains("visible") ? 60 : 0;
-      window.scrollTo({ top: el.offsetTop - navH, behavior: "smooth" });
+      window.scrollTo({ top: el.offsetTop - navH, behavior: prefersReducedMotion() ? "auto" : "smooth" });
     });
   });
 
@@ -74,7 +80,7 @@
       if (!target) return;
       e.preventDefault();
       const navH = nav.classList.contains("visible") ? 64 : 0;
-      window.scrollTo({ top: target.offsetTop - navH, behavior: "smooth" });
+      window.scrollTo({ top: target.offsetTop - navH, behavior: prefersReducedMotion() ? "auto" : "smooth" });
     });
   });
 
@@ -88,7 +94,8 @@
     (entries) => {
       entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
-          setTimeout(() => entry.target.classList.add("in"), i * 60);
+          const delay = prefersReducedMotion() ? 0 : i * 60;
+          setTimeout(() => entry.target.classList.add("in"), delay);
           revealIO.unobserve(entry.target);
         }
       });
@@ -105,6 +112,11 @@
         if (!entry.isIntersecting) return;
         const el = entry.target;
         const target = parseInt(el.dataset.target, 10);
+        if (prefersReducedMotion()) {
+          el.textContent = target;
+          counterIO.unobserve(el);
+          return;
+        }
         const duration = 1600;
         const start = performance.now();
 
@@ -159,7 +171,7 @@
       update() {
         const dx = this.x - mouse.x, dy = this.y - mouse.y;
         const d = Math.sqrt(dx * dx + dy * dy);
-        if (d < 90) {
+        if (d > 0.001 && d < 90) {
           const f = ((90 - d) / 90) * 0.45;
           this.vx += (dx / d) * f;
           this.vy += (dy / d) * f;
@@ -206,7 +218,11 @@
       }
       requestAnimationFrame(animate);
     }
-    animate();
+    if (prefersReducedMotion()) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    } else {
+      animate();
+    }
   }
 
   // ---------- HERO SVG HORIZON ----------
@@ -248,11 +264,14 @@
   }
 
   // ---------- CHARTS (lazy-init when in view) ----------
-  if (typeof Chart === "undefined") return;
-
-  Chart.defaults.font.family = '"IBM Plex Mono", monospace';
-  Chart.defaults.color = "#6b6963";
-  Chart.defaults.animation = { duration: 1250, easing: "easeOutQuart" };
+  const isChartAvailable = typeof Chart !== "undefined";
+  if (isChartAvailable) {
+    Chart.defaults.font.family = '"IBM Plex Mono", monospace';
+    Chart.defaults.color = "#6b6963";
+    Chart.defaults.animation = prefersReducedMotion()
+      ? { duration: 0 }
+      : { duration: 1250, easing: "easeOutQuart" };
+  }
 
   const C = {
     signal: "#C2410C",
@@ -270,7 +289,9 @@
     borderColor: "rgba(194,65,12,0.3)",
     borderWidth: 1,
   };
-  const chartAnim = { duration: 1200, easing: "easeOutQuart" };
+  const chartAnim = prefersReducedMotion()
+    ? { duration: 0 }
+    : { duration: 1200, easing: "easeOutQuart" };
 
   function lazyChart(id, initFn) {
     const el = document.getElementById(id);
@@ -286,8 +307,9 @@
   }
 
   // Workforce — horizontal bar
-  lazyChart("workforceChart", (el) => {
-    new Chart(el, {
+  if (isChartAvailable) {
+    lazyChart("workforceChart", (el) => {
+      new Chart(el, {
       type: "bar",
       data: {
         labels: ["Technology", "Admin & Legal", "Finance", "Healthcare", "Education", "Manufacturing", "Retail"],
@@ -304,7 +326,7 @@
         indexAxis: "y",
         responsive: true,
         maintainAspectRatio: true,
-        animation: { ...chartAnim, duration: 1350, delay: (ctx) => ctx.dataIndex * 90 },
+        animation: { ...chartAnim, duration: prefersReducedMotion() ? 0 : 1350, delay: (ctx) => prefersReducedMotion() ? 0 : ctx.dataIndex * 90 },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -326,17 +348,19 @@
           },
         },
       },
+      });
     });
-  });
+  }
 
   // Education — line chart with fill
-  lazyChart("educationChart", (el) => {
-    const gCtx = el.getContext("2d");
-    const grad = gCtx.createLinearGradient(0, 0, 0, 280);
-    grad.addColorStop(0, "rgba(194,65,12,0.22)");
-    grad.addColorStop(1, "rgba(194,65,12,0)");
+  if (isChartAvailable) {
+    lazyChart("educationChart", (el) => {
+      const gCtx = el.getContext("2d");
+      const grad = gCtx.createLinearGradient(0, 0, 0, 280);
+      grad.addColorStop(0, "rgba(194,65,12,0.22)");
+      grad.addColorStop(1, "rgba(194,65,12,0)");
 
-    new Chart(el, {
+      new Chart(el, {
       type: "line",
       data: {
         labels: ["2020", "2021", "2022", "2023", "2024", "2025", "2026*"],
@@ -357,7 +381,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: { ...chartAnim, duration: 1450, delay: (ctx) => ctx.dataIndex * 90 },
+        animation: { ...chartAnim, duration: prefersReducedMotion() ? 0 : 1450, delay: (ctx) => prefersReducedMotion() ? 0 : ctx.dataIndex * 90 },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -379,12 +403,14 @@
           },
         },
       },
+      });
     });
-  });
+  }
 
   // Society — doughnut
-  lazyChart("societyChart", (el) => {
-    new Chart(el, {
+  if (isChartAvailable) {
+    lazyChart("societyChart", (el) => {
+      new Chart(el, {
       type: "doughnut",
       data: {
         labels: ["Big Tech (Top 5)", "Mid-tier Tech", "Open Source / Others"],
@@ -400,7 +426,7 @@
         responsive: true,
         maintainAspectRatio: false,
         cutout: "65%",
-        animation: { ...chartAnim, duration: 1400, animateRotate: true },
+        animation: { ...chartAnim, duration: prefersReducedMotion() ? 0 : 1400, animateRotate: !prefersReducedMotion() },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -409,8 +435,9 @@
           },
         },
       },
+      });
     });
-  });
+  }
 
   // ---------- TEXT SCRAMBLE EFFECT ----------
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -420,9 +447,15 @@
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const el = entry.target;
-        let iterations = 0;
         const originalText = el.dataset.value || el.textContent.trim();
         if (!el.dataset.value) el.dataset.value = originalText;
+        if (prefersReducedMotion()) {
+          clearInterval(el.interval);
+          el.textContent = originalText;
+          scrambleIO.unobserve(el);
+          return;
+        }
+        let iterations = 0;
         
         clearInterval(el.interval);
         
@@ -450,52 +483,60 @@
 
   // ---------- MAGNETIC BUTTON EFFECT ----------
   const magneticEls = document.querySelectorAll('.cta-button');
-  magneticEls.forEach(el => {
-    el.addEventListener('mousemove', (e) => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      el.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px)`;
+  if (!prefersReducedMotion()) {
+    magneticEls.forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        el.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px)`;
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = `translate(0px, 0px)`;
+      });
     });
-    el.addEventListener('mouseleave', () => {
-      el.style.transform = `translate(0px, 0px)`;
-    });
-  });
+  }
 
   // ---------- 3D TILT ON CARDS ----------
   const cards = document.querySelectorAll('.principle-card');
-  cards.forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -4;
-      const rotateY = ((x - centerX) / centerX) * 4;
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+  if (!prefersReducedMotion()) {
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -4;
+        const rotateY = ((x - centerX) / centerX) * 4;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`; 
+      });
     });
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`; 
-    });
-  });
+  }
 
   // ---------- TERMINAL TYPING EFFECT ----------
   const heroSub = document.querySelector('.hero-sub-head');
   if (heroSub) {
     const text = heroSub.textContent.trim();
     heroSub.textContent = "";
-    let i = 0;
-    // wait for hero animation to complete before typing
-    setTimeout(() => {
-      const typeInterval = setInterval(() => {
-        heroSub.textContent = text.slice(0, i + 1);
-        i++;
-        if (i >= text.length) {
-          clearInterval(typeInterval);
-        }
-      }, 35);
-    }, 1100);
+    if (prefersReducedMotion()) {
+      heroSub.textContent = text;
+    } else {
+      let i = 0;
+      // wait for hero animation to complete before typing
+      setTimeout(() => {
+        const typeInterval = setInterval(() => {
+          heroSub.textContent = text.slice(0, i + 1);
+          i++;
+          if (i >= text.length) {
+            clearInterval(typeInterval);
+          }
+        }, 35);
+      }, 1100);
+    }
   }
 
   // ---------- MATRIX RAIN ----------
@@ -529,26 +570,31 @@
     });
 
     canvasObserver.observe(mCanvas);
+    const actionSection = document.getElementById('action');
+    if (actionSection) canvasObserver.observe(actionSection);
 
-    setInterval(() => {
-      if (!isMatrixVisible) return;
-      
-      mCtx.fillStyle = 'rgba(17, 20, 24, 0.1)'; // faint ink
-      mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
-      
-      mCtx.fillStyle = 'rgba(247, 244, 238, 0.18)'; // paper, faint
-      mCtx.font = fontSize + 'px "IBM Plex Mono", monospace';
-      
-      for(let i = 0; i < drops.length; i++) {
-        const text = chars[Math.floor(Math.random() * chars.length)];
-        mCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+    function drawMatrixFrame() {
+      if (!document.hidden && isMatrixVisible && !prefersReducedMotion()) {
+        mCtx.fillStyle = 'rgba(17, 20, 24, 0.1)'; // faint ink
+        mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
         
-        if(drops[i] * fontSize > mCanvas.height && Math.random() > 0.985) {
-          drops[i] = 0;
+        mCtx.fillStyle = 'rgba(247, 244, 238, 0.18)'; // paper, faint
+        mCtx.font = fontSize + 'px "IBM Plex Mono", monospace';
+        
+        for(let i = 0; i < drops.length; i++) {
+          const text = chars[Math.floor(Math.random() * chars.length)];
+          mCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+          
+          if(drops[i] * fontSize > mCanvas.height && Math.random() > 0.985) {
+            drops[i] = 0;
+          }
+          drops[i] += 0.65;
         }
-        drops[i] += 0.65;
       }
-    }, 35);
+      
+      setTimeout(() => requestAnimationFrame(drawMatrixFrame), 35);
+    }
+    drawMatrixFrame();
   }
   // ---------- ARTICLE MODAL LOGIC ----------
   const articlesData = {
@@ -708,7 +754,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: { ...chartAnim, duration: 1350, ...(existingOptions.animation || {}) },
+        animation: { ...chartAnim, duration: prefersReducedMotion() ? 0 : 1350, ...(existingOptions.animation || {}) },
         interaction: { mode: "nearest", intersect: false, ...(existingOptions.interaction || {}) },
         layout: { padding: 6, ...(existingOptions.layout || {}) },
         plugins: {
@@ -733,52 +779,109 @@
   const closeBtn = document.getElementById('modalClose');
   const backdrop = document.getElementById('modalBackdrop');
   let currentChart = null;
+  let lastModalTrigger = null;
+  function updateBodyScrollLock() {
+    const articleOpen = modal && modal.classList.contains("active");
+    const hallucinationOpen = Boolean(activeHallucinationModal);
+    document.body.style.overflow = articleOpen || hallucinationOpen ? "hidden" : "";
+  }
+
+  function getFocusableElements(container) {
+    if (!container) return [];
+    const selector = [
+      'a[href]',
+      'button:not([disabled])',
+      'textarea:not([disabled])',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])'
+    ].join(', ');
+    return Array.from(container.querySelectorAll(selector)).filter(
+      (el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true"
+    );
+  }
+
+  function handleModalFocusTrap(e) {
+    if (!modal.classList.contains('active') || e.key !== 'Tab') return;
+    const focusables = getFocusableElements(modal);
+    if (focusables.length === 0) {
+      e.preventDefault();
+      return;
+    }
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+      return;
+    }
+    if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  function openModal(triggerEl, data) {
+    lastModalTrigger = triggerEl;
+    modalTitle.textContent = data.title;
+    modalBody.innerHTML = data.body;
+
+    if (currentChart) {
+      currentChart.destroy();
+    }
+
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    updateBodyScrollLock();
+
+    if (closeBtn) closeBtn.focus();
+    document.addEventListener('keydown', handleModalFocusTrap);
+
+    setTimeout(() => {
+      if (isChartAvailable && modalCanvas) {
+        Chart.defaults.font.family = '"IBM Plex Mono", monospace';
+        Chart.defaults.color = "#6b6963";
+        const modalConfig = buildModalChartConfig(data.chartConfig);
+        currentChart = new Chart(modalCanvas, modalConfig);
+      }
+    }, 350);
+  }
 
   const tickerItems = document.querySelectorAll('.ticker-item');
   tickerItems.forEach(item => {
-    item.addEventListener('mousemove', (e) => {
-      const rect = item.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      item.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
-    });
-    item.addEventListener('mouseleave', () => {
-      item.style.transform = `translate(0, 0)`;
-    });
+    if (!prefersReducedMotion()) {
+      item.addEventListener('mousemove', (e) => {
+        const rect = item.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        item.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
+      });
+      item.addEventListener('mouseleave', () => {
+        item.style.transform = `translate(0, 0)`;
+      });
+    }
 
     item.addEventListener('click', () => {
       const id = item.dataset.article;
       const data = articlesData[id];
       if (!data) return;
-
-      modalTitle.textContent = data.title;
-      modalBody.innerHTML = data.body;
-
-      if (currentChart) {
-        currentChart.destroy();
-      }
-
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-
-      setTimeout(() => {
-        if(typeof Chart !== 'undefined' && modalCanvas) {
-          Chart.defaults.font.family = '"IBM Plex Mono", monospace';
-          Chart.defaults.color = "#6b6963";
-          const modalConfig = buildModalChartConfig(data.chartConfig);
-          currentChart = new Chart(modalCanvas, modalConfig);
-        }
-      }, 350);
+      openModal(item, data);
     });
   });
 
   function closeModal() {
     modal.classList.remove('active');
-    document.body.style.overflow = '';
+    modal.setAttribute('aria-hidden', 'true');
+    updateBodyScrollLock();
     if (currentChart) {
       currentChart.destroy();
       currentChart = null;
     }
+    document.removeEventListener('keydown', handleModalFocusTrap);
+    if (lastModalTrigger && typeof lastModalTrigger.focus === "function") {
+      lastModalTrigger.focus();
+    }
+    lastModalTrigger = null;
   }
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
@@ -878,12 +981,22 @@
         }
       }
 
-      setTimeout(() => {
+      if (prefersReducedMotion()) {
+        const priorTransition = riskBar.style.transition;
+        riskBar.style.transition = 'none';
         riskBar.style.width = riskScore + '%';
-        if (isCooked) {
-          riskVerdictBox.classList.add('cooked');
-        }
-      }, 50);
+        if (isCooked) riskVerdictBox.classList.add('cooked');
+        requestAnimationFrame(() => {
+          riskBar.style.transition = priorTransition;
+        });
+      } else {
+        setTimeout(() => {
+          riskBar.style.width = riskScore + '%';
+          if (isCooked) {
+            riskVerdictBox.classList.add('cooked');
+          }
+        }, 50);
+      }
 
       const duration = 1000;
       const startTime = performance.now();
@@ -912,17 +1025,26 @@
       riskCognitive.textContent = "--";
       riskEcon.textContent = "--";
       riskVerdict.textContent = "ANALYZING...";
-      requestAnimationFrame(updateCounter);
+      if (prefersReducedMotion()) {
+        riskValue.textContent = riskScore + '%';
+        riskTime.textContent = timeYears;
+        riskCognitive.textContent = cogOverlap;
+        riskEcon.textContent = econVuln;
+        riskVerdict.textContent = verdict;
+      } else {
+        requestAnimationFrame(updateCounter);
+      }
     });
     
-    jobInput.addEventListener('keypress', (e) => {
+    jobInput.addEventListener('keydown', (e) => {
+      if (e.isComposing || e.keyCode === 229) return;
       if (e.key === 'Enter') analyzeJobBtn.click();
     });
   }
 
   // ---------- PREMIUM FEATURE 1: DATA TRAIL CURSOR ----------
   const cursorCanvas = document.getElementById('cursorNetwork');
-  if (cursorCanvas) {
+  if (cursorCanvas && !prefersReducedMotion()) {
     const cCtx = cursorCanvas.getContext('2d');
     let cw, ch;
     
@@ -995,9 +1117,34 @@
   const hallucinationLinks = document.querySelectorAll('.hallucination-link');
   const hModals = document.querySelectorAll('.h-modal-overlay');
   const hCloseBtns = document.querySelectorAll('.h-modal-close');
+  let activeHallucinationModal = null;
+  let lastHallucinationTrigger = null;
+
+  function getFocusableEls(container) {
+    if (!container) return [];
+    return Array.from(
+      container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+    ).filter((el) => !el.disabled && el.getAttribute('aria-hidden') !== 'true');
+  }
+
+  function closeHallucinationModal(modal = activeHallucinationModal) {
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    activeHallucinationModal = null;
+    updateBodyScrollLock();
+    if (lastHallucinationTrigger) {
+      lastHallucinationTrigger.focus();
+    }
+  }
 
   function closeAllHModals() {
-    hModals.forEach(m => m.classList.remove('active'));
+    hModals.forEach((m) => {
+      m.classList.remove('active');
+      m.setAttribute('aria-hidden', 'true');
+    });
+    activeHallucinationModal = null;
+    updateBodyScrollLock();
   }
 
   hallucinationLinks.forEach(link => {
@@ -1005,19 +1152,50 @@
       const modalId = link.getAttribute('data-modal');
       const targetModal = document.getElementById(modalId);
       if (targetModal) {
+        closeAllHModals();
         targetModal.classList.add('active');
+        targetModal.setAttribute('aria-hidden', 'false');
+        activeHallucinationModal = targetModal;
+        lastHallucinationTrigger = link;
+        updateBodyScrollLock();
+        const closeBtn = targetModal.querySelector('.h-modal-close');
+        if (closeBtn) closeBtn.focus();
       }
     });
   });
 
   hCloseBtns.forEach(btn => {
-    btn.addEventListener('click', closeAllHModals);
+    btn.addEventListener('click', () => {
+      const modal = btn.closest('.h-modal-overlay');
+      closeHallucinationModal(modal);
+    });
   });
 
   hModals.forEach(modal => {
     modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeAllHModals();
+      if (e.target === modal) closeHallucinationModal(modal);
     });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!activeHallucinationModal) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeHallucinationModal(activeHallucinationModal);
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const focusableEls = getFocusableEls(activeHallucinationModal);
+    if (focusableEls.length === 0) return;
+    const firstEl = focusableEls[0];
+    const lastEl = focusableEls[focusableEls.length - 1];
+    if (e.shiftKey && document.activeElement === firstEl) {
+      e.preventDefault();
+      lastEl.focus();
+    } else if (!e.shiftKey && document.activeElement === lastEl) {
+      e.preventDefault();
+      firstEl.focus();
+    }
   });
 
   // ---------- PREMIUM FEATURE 3: LIVE COST TRACKER ----------
@@ -1027,8 +1205,11 @@
   if (waterCounter && powerCounter) {
     let waterBase = 2504192;
     let powerBase = 184302;
+    const actionSection = document.getElementById('action');
+    if (actionSection) canvasObserver.observe(actionSection);
     
     setInterval(() => {
+      if (document.hidden || !isActionVisible) return;
       waterBase += Math.floor(Math.random() * 50) + 20; 
       powerBase += Math.floor(Math.random() * 15) + 5;
       
@@ -1179,17 +1360,21 @@
           tFinalScore.textContent = score;
           tEndScreen.style.display = 'flex';
           
-          tTypewriter.textContent = '';
-          let i = 0;
-          clearInterval(typeInterval);
-          typeInterval = setInterval(() => {
-            if (i < msgText.length) {
-              tTypewriter.textContent += msgText.charAt(i);
-              i++;
-            } else {
-              clearInterval(typeInterval);
-            }
-          }, 50);
+          if (prefersReducedMotion()) {
+            tTypewriter.textContent = msgText;
+          } else {
+            tTypewriter.textContent = '';
+            let i = 0;
+            clearInterval(typeInterval);
+            typeInterval = setInterval(() => {
+              if (i < msgText.length) {
+                tTypewriter.textContent += msgText.charAt(i);
+                i++;
+              } else {
+                clearInterval(typeInterval);
+              }
+            }, 50);
+          }
         }
       }, 1500);
     }

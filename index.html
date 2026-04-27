@@ -79,7 +79,7 @@
   </a>
 </header>
 
-<div class="ticker-wrap" aria-label="Interactive news ticker">
+<section class="ticker-wrap" role="region" aria-label="Interactive AI news highlights">
   <div class="ticker-inner">
     <button class="ticker-item" data-article="1"><span class="ticker-accent">40%</span> of global jobs exposed to AI &mdash; IMF</button>
     <span class="ticker-sep" aria-hidden="true">◆</span>
@@ -93,20 +93,20 @@
     <span class="ticker-sep" aria-hidden="true">◆</span>
     <button class="ticker-item" data-article="6">Professors blindly trusting <span class="ticker-accent">flawed</span> AI detectors ruin academic records</button>
     <span class="ticker-sep" aria-hidden="true">◆</span>
-    <button class="ticker-item" data-article="1" tabindex="-1"><span class="ticker-accent">40%</span> of global jobs exposed to AI &mdash; IMF</button>
+    <button class="ticker-item" data-article="1" tabindex="-1" aria-hidden="true"><span class="ticker-accent">40%</span> of global jobs exposed to AI &mdash; IMF</button>
     <span class="ticker-sep" aria-hidden="true">◆</span>
-    <button class="ticker-item" data-article="2" tabindex="-1"><span class="ticker-accent">85%</span> of students use AI tools for academic work in 2026</button>
+    <button class="ticker-item" data-article="2" tabindex="-1" aria-hidden="true"><span class="ticker-accent">85%</span> of students use AI tools for academic work in 2026</button>
     <span class="ticker-sep" aria-hidden="true">◆</span>
-    <button class="ticker-item" data-article="3" tabindex="-1">Top <span class="ticker-accent">5</span> tech giants control the majority of AI infrastructure</button>
+    <button class="ticker-item" data-article="3" tabindex="-1" aria-hidden="true">Top <span class="ticker-accent">5</span> tech giants control the majority of AI infrastructure</button>
     <span class="ticker-sep" aria-hidden="true">◆</span>
-    <button class="ticker-item" data-article="4" tabindex="-1">AI hiring systems process <span class="ticker-accent">millions</span> of applications daily</button>
+    <button class="ticker-item" data-article="4" tabindex="-1" aria-hidden="true">AI hiring systems process <span class="ticker-accent">millions</span> of applications daily</button>
     <span class="ticker-sep" aria-hidden="true">◆</span>
-    <button class="ticker-item" data-article="5" tabindex="-1">AI detection tools disproportionately flag <span class="ticker-accent">non-native</span> English speakers</button>
+    <button class="ticker-item" data-article="5" tabindex="-1" aria-hidden="true">AI detection tools disproportionately flag <span class="ticker-accent">non-native</span> English speakers</button>
     <span class="ticker-sep" aria-hidden="true">◆</span>
-    <button class="ticker-item" data-article="6" tabindex="-1">Professors blindly trusting <span class="ticker-accent">flawed</span> AI detectors ruin academic records</button>
+    <button class="ticker-item" data-article="6" tabindex="-1" aria-hidden="true">Professors blindly trusting <span class="ticker-accent">flawed</span> AI detectors ruin academic records</button>
     <span class="ticker-sep" aria-hidden="true">◆</span>
   </div>
-</div>
+</section>
 
 <main>
 
@@ -154,6 +154,7 @@
         <div class="risk-analyzer">
           <p class="risk-prompt">Ask AI about your career exposure</p>
           <div class="risk-input-group">
+            <label for="jobInput" class="sr-only">Enter your major or job title</label>
             <input type="text" id="jobInput" placeholder="Enter your major or job title..." autocomplete="off">
             <button id="analyzeJobBtn" class="risk-btn">Analyze</button>
           </div>
@@ -188,6 +189,7 @@
         <div class="chart-wrapper">
           <p class="chart-title">AI Exposure Risk by Sector <span class="chart-note">— estimated % of roles affected</span></p>
           <canvas id="workforceChart" aria-label="Horizontal bar chart showing AI exposure risk by industry sector"></canvas>
+          <p class="chart-note">Summary: Technology (72%) and admin/legal (69%) are most exposed; retail is lowest at 28%.</p>
         </div>
       </div>
     </div>
@@ -244,6 +246,7 @@
           <div style="position: relative; height: 280px; width: 100%;">
             <canvas id="educationChart" aria-label="Line chart showing rising student AI tool adoption from 2020 to 2026"></canvas>
           </div>
+          <p class="chart-note">Summary: Student AI-tool use rises from 5% in 2020 to a projected 85% in 2026.</p>
         </div>
       </div>
     </div>
@@ -274,9 +277,9 @@
           <div class="hallucination-doc">
             <div class="doc-header">MATA v. AVIANCA, INC.</div>
             <div class="doc-body">
-              <p>The plaintiff relies on <span class="hallucination-link" data-modal="modal-varghese">Varghese v. China Southern Airlines Co Ltd, 925 F.3d 1339 (11th Cir. 2019)</span> to support the tolling of the statute of limitations under the Montreal Convention.</p>
-              <p>Furthermore, the court in <span class="hallucination-link" data-modal="modal-shaboon">Shaboon v. Egyptair 2013 IL App (1st) 111279-U</span> previously held that internal airline policies do not supersede international carriage limits.</p>
-              <p>As explicitly stated in <span class="hallucination-link" data-modal="modal-peters">Peters v. KLM Royal Dutch Airlines</span>, "A delay in routing does not extinguish the fundamental claims of the passenger under Article 19."</p>
+              <p>The plaintiff relies on <button class="hallucination-link" data-modal="modal-varghese" type="button" aria-haspopup="dialog">Varghese v. China Southern Airlines Co Ltd, 925 F.3d 1339 (11th Cir. 2019)</button> to support the tolling of the statute of limitations under the Montreal Convention.</p>
+              <p>Furthermore, the court in <button class="hallucination-link" data-modal="modal-shaboon" type="button" aria-haspopup="dialog">Shaboon v. Egyptair 2013 IL App (1st) 111279-U</button> previously held that internal airline policies do not supersede international carriage limits.</p>
+              <p>As explicitly stated in <button class="hallucination-link" data-modal="modal-peters" type="button" aria-haspopup="dialog">Peters v. KLM Royal Dutch Airlines</button>, "A delay in routing does not extinguish the fundamental claims of the passenger under Article 19."</p>
             </div>
             <p class="doc-footer">Click highlighted text to verify citations.</p>
           </div>
@@ -297,6 +300,7 @@
             <div class="donut-legend-item"><span class="donut-swatch" style="background:var(--ink-soft)"></span>Mid-tier Tech — 14%</div>
             <div class="donut-legend-item"><span class="donut-swatch" style="background:var(--stone)"></span>Open Source / Others — 8%</div>
           </div>
+          <p class="chart-note">Summary: Most infrastructure capacity is centralized in the top five firms (78%), with 22% split across all others.</p>
         </div>
       </div>
     </div>
@@ -385,14 +389,14 @@
   <div class="footer-inner">
     <p class="footer-title">Sources &amp; Further Reading</p>
     <ol class="footer-sources">
-      <li>"'AI Impact by 2040': Deep Thinkers Address the Potential Future." <em>Imagining the Digital Future Center</em>, Elon University, imaginingthedigitalfuture.org/reports-and-publications/the-impact-of-artificial-intelligence-by-2040/deep-thinkers-address-the-potential-future/.</li>
-      <li>"AI in Schools: Pros and Cons." <em>College of Education</em>, University of Illinois Urbana-Champaign, 24 Oct. 2024, education.illinois.edu/about/news-events/news/article/2024/10/24/ai-in-schools--pros-and-cons.</li>
-      <li>"The Evolution and Future of Artificial Intelligence: A Student's Guide." <em>California Miramar University</em>, July 2025, www.calmu.edu/news/future-of-artificial-intelligence.</li>
-      <li>Georgieva, Kristalina. "New Skills and AI Are Reshaping the Future of Work." <em>IMF Blog</em>, International Monetary Fund, 14 Jan. 2026, www.imf.org/en/blogs/articles/2026/01/14/new-skills-and-ai-are-reshaping-the-future-of-work.</li>
-      <li>Hayes, Molly, and Amanda Downie. "AI and the Future of Work." <em>IBM Think</em>, IBM, www.ibm.com/think/insights/ai-and-the-future-of-work. Accessed 25 Mar. 2026.</li>
-      <li>Mucci, Tim. "The Future of AI: Trends Shaping the Next 10 Years." <em>IBM Think</em>, IBM, www.ibm.com/think/insights/artificial-intelligence-future. Accessed 25 Mar. 2026.</li>
-      <li>Towers-Clark, Charles. "AI In 2026: 10 Predictions On Automation And The Future Of Work." <em>Forbes</em>, 10 Dec. 2025, www.forbes.com/sites/charlestowersclark/2025/12/10/ai-in-2026-10-predictions-on-automation-and-the-future-of-work/.</li>
-      <li>Zewe, Adam. "What Does the Future Hold for Generative AI?" <em>MIT News</em>, Massachusetts Institute of Technology, 19 Sept. 2025, news.mit.edu/2025/what-does-future-hold-generative-ai-0919.</li>
+      <li>"'AI Impact by 2040': Deep Thinkers Address the Potential Future." <em>Imagining the Digital Future Center</em>, Elon University, <a href="https://imaginingthedigitalfuture.org/reports-and-publications/the-impact-of-artificial-intelligence-by-2040/deep-thinkers-address-the-potential-future/">imaginingthedigitalfuture.org/reports-and-publications/the-impact-of-artificial-intelligence-by-2040/deep-thinkers-address-the-potential-future/</a>.</li>
+      <li>"AI in Schools: Pros and Cons." <em>College of Education</em>, University of Illinois Urbana-Champaign, 24 Oct. 2024, <a href="https://education.illinois.edu/about/news-events/news/article/2024/10/24/ai-in-schools--pros-and-cons">education.illinois.edu/about/news-events/news/article/2024/10/24/ai-in-schools--pros-and-cons</a>.</li>
+      <li>"The Evolution and Future of Artificial Intelligence: A Student's Guide." <em>California Miramar University</em>, July 2025, <a href="https://www.calmu.edu/news/future-of-artificial-intelligence">www.calmu.edu/news/future-of-artificial-intelligence</a>.</li>
+      <li>Georgieva, Kristalina. "New Skills and AI Are Reshaping the Future of Work." <em>IMF Blog</em>, International Monetary Fund, 14 Jan. 2026, <a href="https://www.imf.org/en/blogs/articles/2026/01/14/new-skills-and-ai-are-reshaping-the-future-of-work">www.imf.org/en/blogs/articles/2026/01/14/new-skills-and-ai-are-reshaping-the-future-of-work</a>.</li>
+      <li>Hayes, Molly, and Amanda Downie. "AI and the Future of Work." <em>IBM Think</em>, IBM, <a href="https://www.ibm.com/think/insights/ai-and-the-future-of-work">www.ibm.com/think/insights/ai-and-the-future-of-work</a>. Accessed 25 Mar. 2026.</li>
+      <li>Mucci, Tim. "The Future of AI: Trends Shaping the Next 10 Years." <em>IBM Think</em>, IBM, <a href="https://www.ibm.com/think/insights/artificial-intelligence-future">www.ibm.com/think/insights/artificial-intelligence-future</a>. Accessed 25 Mar. 2026.</li>
+      <li>Towers-Clark, Charles. "AI In 2026: 10 Predictions On Automation And The Future Of Work." <em>Forbes</em>, 10 Dec. 2025, <a href="https://www.forbes.com/sites/charlestowersclark/2025/12/10/ai-in-2026-10-predictions-on-automation-and-the-future-of-work/">www.forbes.com/sites/charlestowersclark/2025/12/10/ai-in-2026-10-predictions-on-automation-and-the-future-of-work/</a>.</li>
+      <li>Zewe, Adam. "What Does the Future Hold for Generative AI?" <em>MIT News</em>, Massachusetts Institute of Technology, 19 Sept. 2025, <a href="https://news.mit.edu/2025/what-does-future-hold-generative-ai-0919">news.mit.edu/2025/what-does-future-hold-generative-ai-0919</a>.</li>
     </ol>
     <p class="footer-colophon">
       A public argument. Set in Fraunces and IBM Plex Sans.
@@ -403,7 +407,7 @@
 <!-- ARTICLE MODAL -->
 <div class="article-modal" id="articleModal" aria-hidden="true">
   <div class="article-modal-backdrop" id="modalBackdrop"></div>
-  <div class="article-modal-content">
+  <div class="article-modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalBody">
     <button class="article-modal-close" id="modalClose" aria-label="Close article">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12"/>
@@ -423,30 +427,30 @@
 </div>
 
 <!-- Hallucination Modals -->
-<div id="modal-varghese" class="h-modal-overlay">
-  <div class="h-modal-content">
+<div id="modal-varghese" class="h-modal-overlay" aria-hidden="true">
+  <div class="h-modal-content" role="dialog" aria-modal="true" aria-labelledby="hTitleVarghese" aria-describedby="hDescVarghese">
     <button class="h-modal-close" aria-label="Close">&times;</button>
     <span class="h-tag">Hallucination Detected</span>
-    <h4>Varghese v. China Southern Airlines</h4>
-    <p><strong>The Reality:</strong> This case does not exist. ChatGPT completely fabricated the case name, the reporter citation (925 F.3d 1339), and the court (11th Cir.). The lawyers who submitted this brief were sanctioned by the judge.</p>
+    <h4 id="hTitleVarghese">Varghese v. China Southern Airlines</h4>
+    <p id="hDescVarghese"><strong>The Reality:</strong> This case does not exist. ChatGPT completely fabricated the case name, the reporter citation (925 F.3d 1339), and the court (11th Cir.). The lawyers who submitted this brief were sanctioned by the judge.</p>
   </div>
 </div>
 
-<div id="modal-shaboon" class="h-modal-overlay">
-  <div class="h-modal-content">
+<div id="modal-shaboon" class="h-modal-overlay" aria-hidden="true">
+  <div class="h-modal-content" role="dialog" aria-modal="true" aria-labelledby="hTitleShaboon" aria-describedby="hDescShaboon">
     <button class="h-modal-close" aria-label="Close">&times;</button>
     <span class="h-tag">Hallucination Detected</span>
-    <h4>Shaboon v. Egyptair</h4>
-    <p><strong>The Reality:</strong> While "Shaboon" is a real name and "Egyptair" is a real airline, ChatGPT hallucinated this specific lawsuit and merged it with a fake Illinois Appellate Court citation format. It's a classic example of an AI combining real-sounding elements into a completely fake fact.</p>
+    <h4 id="hTitleShaboon">Shaboon v. Egyptair</h4>
+    <p id="hDescShaboon"><strong>The Reality:</strong> While "Shaboon" is a real name and "Egyptair" is a real airline, ChatGPT hallucinated this specific lawsuit and merged it with a fake Illinois Appellate Court citation format. It's a classic example of an AI combining real-sounding elements into a completely fake fact.</p>
   </div>
 </div>
 
-<div id="modal-peters" class="h-modal-overlay">
-  <div class="h-modal-content">
+<div id="modal-peters" class="h-modal-overlay" aria-hidden="true">
+  <div class="h-modal-content" role="dialog" aria-modal="true" aria-labelledby="hTitlePeters" aria-describedby="hDescPeters">
     <button class="h-modal-close" aria-label="Close">&times;</button>
     <span class="h-tag">Hallucination Detected</span>
-    <h4>Peters v. KLM Royal Dutch Airlines</h4>
-    <p><strong>The Reality:</strong> Not only did ChatGPT invent this case, it even generated a fake quote ("A delay in routing does not extinguish...") to make it look legitimate when the lawyers asked the AI to verify its sources.</p>
+    <h4 id="hTitlePeters">Peters v. KLM Royal Dutch Airlines</h4>
+    <p id="hDescPeters"><strong>The Reality:</strong> Not only did ChatGPT invent this case, it even generated a fake quote ("A delay in routing does not extinguish...") to make it look legitimate when the lawyers asked the AI to verify its sources.</p>
   </div>
 </div>
 

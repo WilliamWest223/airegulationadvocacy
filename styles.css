@@ -13,6 +13,8 @@
   --f-display: "Fraunces", "Iowan Old Style", Georgia, serif;
   --f-body: "IBM Plex Sans", system-ui, sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --f-sans: var(--f-body);
+  --f-serif: var(--f-display);
 
   --container: 1280px;
   --reading: 680px;
@@ -27,6 +29,18 @@ html { scroll-behavior: smooth; }
 img, svg { display: block; max-width: 100%; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
 button { background: none; border: none; padding: 0; cursor: pointer; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 body {
   font-family: var(--f-body);
@@ -700,11 +714,17 @@ em {
   margin-bottom: 1rem;
 }
 .hallucination-link {
+  appearance: none;
   background: rgba(194, 65, 12, 0.15);
+  border: 0;
   border-bottom: 2px dotted var(--signal);
   cursor: pointer;
   transition: background 0.2s;
   padding: 0 4px;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
 }
 .hallucination-link:hover {
   background: rgba(194, 65, 12, 0.4);
@@ -1238,6 +1258,16 @@ em {
   font-size: 0.72rem;
   color: var(--stone);
   letter-spacing: 0.05em;
+}
+.footer-sources a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  overflow-wrap: anywhere;
+}
+.footer-sources a:hover,
+.footer-sources a:focus-visible {
+  color: var(--signal);
 }
 .footer-colophon {
   margin-top: 3rem;
