@@ -407,7 +407,7 @@
     });
   }
 
-  // Society — doughnut
+  // Society — doughnut — use explicit aspectRatio so Chart.js gets non-zero dimensions
   if (isChartAvailable) {
     lazyChart("societyChart", (el) => {
       new Chart(el, {
@@ -424,8 +424,10 @@
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
+        aspectRatio: 1,
         cutout: "65%",
+        layout: { padding: 4 },
         animation: { ...chartAnim, duration: prefersReducedMotion() ? 0 : 1400, animateRotate: !prefersReducedMotion() },
         plugins: {
           legend: { display: false },
