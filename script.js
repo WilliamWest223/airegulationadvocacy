@@ -617,7 +617,7 @@
           maintainAspectRatio: false, 
           plugins: { legend: { display: false } },
           scales: { 
-            y: { max: 100, title: { display: true, text: 'Exposure (%)' } },
+            y: { beginAtZero: true, max: 100, title: { display: true, text: "Exposure (%)" } },
             x: { grid: { display: false } }
           } 
         }
@@ -692,7 +692,19 @@
             backgroundColor: ['#111418', '#2a2d33', '#6b6963', '#C2410C', '#9a3308']
           }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              type: "logarithmic",
+              min: 1,
+              title: { display: true, text: "Candidate volume (log scale)" }
+            },
+            x: { title: { display: true, text: "Funnel stage" } }
+          }
+        }
       }
     },
     "5": {
@@ -702,11 +714,44 @@
         type: 'scatter',
         data: {
           datasets: [
-            { label: 'Native Speakers', data: [{x: 10, y: 5}, {x: 20, y: 8}, {x: 30, y: 12}, {x: 40, y: 18}, {x: 50, y: 22}], backgroundColor: 'rgba(17,20,24,0.7)' },
-            { label: 'Non-Native Speakers', data: [{x: 15, y: 45}, {x: 25, y: 62}, {x: 35, y: 78}, {x: 45, y: 88}, {x: 55, y: 94}], backgroundColor: 'rgba(194,65,12,0.9)' }
+            {
+              label: "Native Speakers",
+              data: [{x: 10, y: 5}, {x: 20, y: 8}, {x: 30, y: 12}, {x: 40, y: 18}, {x: 50, y: 22}],
+              backgroundColor: "rgba(17,20,24,0.75)",
+              borderColor: "rgba(17,20,24,0.95)",
+              borderWidth: 1,
+              pointRadius: 6,
+              pointHoverRadius: 8
+            },
+            {
+              label: "Non-Native Speakers",
+              data: [{x: 15, y: 45}, {x: 25, y: 62}, {x: 35, y: 78}, {x: 45, y: 88}, {x: 55, y: 94}],
+              backgroundColor: "rgba(194,65,12,0.85)",
+              borderColor: "rgba(194,65,12,1)",
+              borderWidth: 1,
+              pointRadius: 6,
+              pointHoverRadius: 8
+            }
           ]
         },
-        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Text Predictability Score' } }, y: { title: { display: true, text: 'AI Flagged Probability (%)' } } } }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: "linear",
+              min: 0,
+              max: 60,
+              title: { display: true, text: "Text predictability score" }
+            },
+            y: {
+              type: "linear",
+              min: 0,
+              max: 100,
+              title: { display: true, text: "AI-flagged probability (%)" }
+            }
+          }
+        }
       }
     },
     "6": {
@@ -747,29 +792,86 @@
     };
   }
 
-  function buildModalChartConfig(baseConfig) {
-    const existingOptions = baseConfig.options || {};
+  function mergeScaleAxis(a, b) {
+    if (!a) return b || {};
+    if (!b) return a;
     return {
-      ...baseConfig,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: { ...chartAnim, duration: prefersReducedMotion() ? 0 : 1350, ...(existingOptions.animation || {}) },
-        interaction: { mode: "nearest", intersect: false, ...(existingOptions.interaction || {}) },
-        layout: { padding: 6, ...(existingOptions.layout || {}) },
-        plugins: {
-          legend: {
-            display: true,
-            position: "bottom",
-            labels: { boxWidth: 12, boxHeight: 12, color: "#444139", padding: 14 }
-          },
-          tooltip: { ...tooltipDefaults },
-          ...(existingOptions.plugins || {})
-        },
-        scales: getModalChartScales(baseConfig.type),
-        ...(existingOptions || {})
-      }
+      ...a,
+      ...b,
+      ticks: b.ticks || a.ticks ? { ...(a.ticks || {}), ...(b.ticks || {}) } : undefined,
+      pointLabels: b.pointLabels || a.pointLabels ? { ...(a.pointLabels || {}), ...(b.pointLabels || {}) } : undefined,
+      title: b.title || a.title ? { ...(a.title || {}), ...(b.title || {}) } : undefined,
+      grid: b.grid || a.grid ? { ...(a.grid || {}), ...(b.grid || {}) } : undefined,
+      angleLines: b.angleLines || a.angleLines ? { ...(a.angleLines || {}), ...(b.angleLines || {}) } : undefined
     };
+  }
+
+  function mergeModalScales(def, ext) {
+    if (!def && !ext) return null;
+    if (!def) return ext;
+    if (!ext) return def;
+    const keys = new Set([...Object.keys(def), ...Object.keys(ext)]);
+    const out = {};
+    keys.forEach((k) => {
+      out[k] = mergeScaleAxis(def[k], ext[k]);
+    });
+    return out;
+  }
+
+  function shouldShowModalLegend(type, baseConfig) {
+    if (type === "doughnut" || type === "pie") return true;
+    const n = baseConfig.data && baseConfig.data.datasets && baseConfig.data.datasets.length;
+    return n > 1;
+  }
+
+  function buildModalChartConfig(baseConfig) {
+    const ext = baseConfig.options || {};
+    const type = baseConfig.type;
+    const userPlugins = ext.plugins || {};
+    const defSc = getModalChartScales(type);
+    const mergedSc = mergeModalScales(defSc || {}, ext.scales || {});
+
+    const legendFromUser = userPlugins.legend;
+    const defaultLegend = shouldShowModalLegend(type, baseConfig);
+    const plugins = {
+      ...userPlugins,
+      legend: {
+        position: (legendFromUser && legendFromUser.position) || "bottom",
+        labels: {
+          boxWidth: 12,
+          boxHeight: 12,
+          color: "#444139",
+          padding: 14,
+          ...(legendFromUser && legendFromUser.labels ? legendFromUser.labels : {})
+        },
+        ...legendFromUser,
+        display:
+          legendFromUser && Object.prototype.hasOwnProperty.call(legendFromUser, "display")
+            ? legendFromUser.display
+            : defaultLegend
+      },
+      tooltip: { ...tooltipDefaults, ...((userPlugins && userPlugins.tooltip) || {}) }
+    };
+
+    const { scales: _s, plugins: _p, ...extWithoutScalesOrPlugins } = ext;
+
+    const options = {
+      ...extWithoutScalesOrPlugins,
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        ...chartAnim,
+        duration: prefersReducedMotion() ? 0 : 1350,
+        ...((ext && ext.animation) || {})
+      },
+      interaction: { mode: "nearest", intersect: false, ...((ext && ext.interaction) || {}) },
+      layout: { padding: 6, ...((ext && ext.layout) || {}) },
+      plugins
+    };
+    if (mergedSc && Object.keys(mergedSc).length) {
+      options.scales = mergedSc;
+    }
+    return { ...baseConfig, options };
   }
 
   const modal = document.getElementById('articleModal');
@@ -843,8 +945,14 @@
         Chart.defaults.color = "#6b6963";
         const modalConfig = buildModalChartConfig(data.chartConfig);
         currentChart = new Chart(modalCanvas, modalConfig);
+        requestAnimationFrame(() => {
+          if (currentChart) {
+            currentChart.resize();
+            currentChart.update("none");
+          }
+        });
       }
-    }, 350);
+    }, 120);
   }
 
   const tickerItems = document.querySelectorAll('.ticker-item');
@@ -1295,20 +1403,17 @@
     let nextRoundTimeout;
 
     if (
-      !tHeader ||
-      !tRound ||
-      !tScore ||
-      !tStatement ||
-      !tControls ||
-      !tResult ||
-      !tEndScreen ||
-      !tFinalScore ||
-      !tRestartBtn ||
-      !tTypewriter
+      tHeader &&
+      tRound &&
+      tScore &&
+      tStatement &&
+      tControls &&
+      tResult &&
+      tEndScreen &&
+      tFinalScore &&
+      tRestartBtn &&
+      tTypewriter
     ) {
-      return;
-    }
-
     function loadStatement() {
       if (pool.length === 0) pool = [...turingStatements];
       const idx = Math.floor(Math.random() * pool.length);
@@ -1402,5 +1507,6 @@
     });
 
     loadStatement();
+    }
   }
 })();
